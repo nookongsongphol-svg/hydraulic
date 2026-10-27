@@ -1,0 +1,413 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}.back{display:inline-block;margin:12px 16px 0;font:600 14px system-ui,sans-serif;color:#2463c9;text-decoration:none}</style></head><body><a class="back" href="index.html">← กลับหน้าเมนู</a>
+<title>วาล์วเบรกไฮดรอลิก</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: schematic sheet left, control desk right; stacks on phones */
+:root{
+  --paper:#eef3f6; --sheet:#fbfdfe; --ink:#1b2833; --muted:#5a6a77; --rule:#cfd9e0;
+  --press:#d2382c; --ret:#2463c9; --low:#7fb6e8; --idle:#a3b3c0;
+  --press-fill:rgba(210,56,44,.28); --ret-fill:rgba(36,99,201,.2); --idle-fill:rgba(143,163,179,.18);
+  --steel:#dfe6eb; --accent:#e0a21b; --ok:#1f8a5b; --warn:#c2410c; --load:#6b7a86;
+  --f-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0d151c; --sheet:#131e27; --ink:#e2e9ef; --muted:#93a4b2; --rule:#273643;
+  --press:#ff6b5d; --ret:#62a0ff; --low:#3f6f99; --idle:#4d6273;
+  --press-fill:rgba(255,107,93,.3); --ret-fill:rgba(98,160,255,.24); --idle-fill:rgba(93,115,133,.25);
+  --steel:#2a3a47; --accent:#f2b739; --ok:#3fc386; --warn:#fb923c; --load:#8a9aa6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0d151c; --sheet:#131e27; --ink:#e2e9ef; --muted:#93a4b2; --rule:#273643;
+  --press:#ff6b5d; --ret:#62a0ff; --low:#3f6f99; --idle:#4d6273;
+  --press-fill:rgba(255,107,93,.3); --ret-fill:rgba(98,160,255,.24); --idle-fill:rgba(93,115,133,.25);
+  --steel:#2a3a47; --accent:#f2b739; --ok:#3fc386; --warn:#fb923c; --load:#8a9aa6; color-scheme:dark}
+html{background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+header{display:flex;flex-direction:column;gap:2px;margin-bottom:16px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--f-display);font-size:clamp(24px,4vw,34px);line-height:1.2;margin:0;text-wrap:balance}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:880px){.grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:8px;min-width:0}
+svg{display:block;width:100%;height:auto;max-height:86vh}
+.panel{display:flex;flex-direction:column;gap:14px;min-width:0}
+.box{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.status{font-family:var(--f-display);font-size:19px;line-height:1.35;margin:0 0 4px}
+.status.warn{color:var(--warn)}
+.sub{color:var(--muted);margin:0;font-size:14px}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+button{font:600 15px var(--f-body);color:var(--ink);background:var(--steel);border:1px solid var(--rule);border-radius:8px;padding:11px 8px;cursor:pointer}
+button small{display:block;font-weight:400;font-size:12px;opacity:.8}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.dcv[aria-pressed="true"]{background:var(--ink);color:var(--sheet);border-color:transparent}
+#demoBtn{grid-column:1/-1;background:transparent}
+#demoBtn.on{border-color:var(--accent);color:var(--accent)}
+.tog{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:14px}
+.tog input{width:18px;height:18px;accent-color:var(--warn)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--idle-fill);color:var(--muted);border:1px solid var(--rule)}
+.chip.on{background:var(--ok);color:#fff;border-color:transparent}
+.chip.bad{background:var(--warn);color:#fff;border-color:transparent}
+.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.meter .k{font-size:12px;color:var(--muted)}
+.meter .v{font-family:var(--f-mono);font-size:21px;font-variant-numeric:tabular-nums}
+.meter .v small{font-size:12px;color:var(--muted);margin-left:2px}
+.meter .v.hot{color:var(--warn)}
+.sliders{display:grid;gap:10px}
+.sl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;font-size:14px}
+.sl input{grid-column:1/-1;width:100%;accent-color:var(--press)}
+.sl output{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums}
+.sl span{min-width:0}
+ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:s}
+ol li{counter-increment:s;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;font-size:14px;color:var(--muted);padding:6px 8px;border-radius:8px;transition:background .25s,color .25s}
+ol li::before{content:counter(s);font:600 13px var(--f-mono);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--rule)}
+ol li.act{color:var(--ink);background:var(--idle-fill)}
+ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:22px;height:4px;border-radius:2px;display:inline-block}
+
+.ink{stroke:var(--ink);fill:none;stroke-width:1.4}
+.inkf{fill:var(--ink)}
+.bx{fill:var(--sheet);stroke:var(--ink);stroke-width:1.4}
+.tag{font-family:var(--f-mono);font-size:9.5px;fill:var(--ink);font-weight:500}
+.num{font-family:var(--f-mono);font-size:8.5px;fill:var(--muted)}
+.lbl{font-family:var(--f-body);font-size:9.5px;fill:var(--muted)}
+.val{font-family:var(--f-mono);font-size:10px;font-weight:500;fill:var(--ink)}
+.val.hot{fill:var(--warn)}
+.pipe{fill:none;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round;stroke:var(--idle);transition:stroke .2s}
+.pipe.p{stroke:var(--press)} .pipe.r{stroke:var(--ret)} .pipe.l{stroke:var(--low)}
+.flow{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sheet);stroke-dasharray:3 10;opacity:0}
+.flow.fwd,.flow.rev{opacity:.95;animation:dash .5s linear infinite}
+.flow.rev{animation-direction:reverse}
+@keyframes dash{to{stroke-dashoffset:-13}}
+.ch{fill:var(--idle-fill);transition:fill .2s} .ch.p{fill:var(--press-fill)} .ch.r{fill:var(--ret-fill)}
+#block{transition:opacity .3s}
+#block.off{opacity:.18}
+.bub{fill:none;stroke:var(--warn);stroke-width:1.2;opacity:0}
+.bubs.go .bub{animation:bub .5s ease-out infinite}
+.bubs.go .bub:nth-child(2){animation-delay:.12s}.bubs.go .bub:nth-child(3){animation-delay:.25s}.bubs.go .bub:nth-child(4){animation-delay:.37s}
+@keyframes bub{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(1.5)}}
+.shake{animation:shake .45s linear}
+@keyframes shake{0%,100%{transform:translate(0,0)}15%{transform:translate(-3px,1px)}30%{transform:translate(3px,-1px)}45%{transform:translate(-2px,0)}60%{transform:translate(2px,1px)}80%{transform:translate(-1px,0)}}
+@media (prefers-reduced-motion:reduce){.flow.fwd,.flow.rev{animation:none;stroke-dasharray:none;opacity:.35}.bubs.go .bub{animation:none;opacity:.8}.shake{animation:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Brake valve · cross relief + anti-cavitation check valves</span>
+    <h1>วาล์วเบรก หยุดโหลดหนักอย่างนุ่มนวล</h1>
+  </header>
+
+  <div class="grid">
+    <div class="sheet">
+      <svg viewBox="0 0 400 575" role="img" aria-label="แผนผังวงจรวาล์วเบรกแบบเคลื่อนไหว">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10z" class="inkf"/>
+          </marker>
+        </defs>
+        <g id="pipes"></g>
+        <g id="parts"></g>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <div class="box" aria-live="polite">
+        <p class="status" id="status">โหลดหยุดนิ่ง</p>
+        <p class="sub" id="statusSub">กด “ยืด” ให้โหลดวิ่ง แล้วกด “กลาง” ระหว่างทางเพื่อดูวาล์วเบรกทำงาน</p>
+      </div>
+
+      <div class="box controls">
+        <button class="dcv" id="bRet" aria-pressed="false">◀ หด<small>P→B, A→T</small></button>
+        <button class="dcv" id="bMid" aria-pressed="true">■ กลาง<small>ปิดทุกพอร์ต</small></button>
+        <button class="dcv" id="bExt" aria-pressed="false">ยืด ▶<small>P→A, B→T</small></button>
+        <label class="tog" for="noBrake"><input type="checkbox" id="noBrake"> ถอดวาล์วเบรกออก เพื่อเปรียบเทียบ</label>
+        <button id="demoBtn">▶ สาธิตอัตโนมัติ (มีวาล์วเบรก เทียบกับไม่มี)</button>
+      </div>
+
+      <div class="box chips" aria-label="สถานะวาล์ว">
+        <span class="chip" id="cRA">Relief ฝั่ง A เปิด</span>
+        <span class="chip" id="cRB">Relief ฝั่ง B เปิด</span>
+        <span class="chip" id="cCA">Check เติมฝั่ง A</span>
+        <span class="chip" id="cCB">Check เติมฝั่ง B</span>
+        <span class="chip" id="cCav">Cavitation</span>
+      </div>
+
+      <div class="box meters">
+        <div class="meter"><div class="k">แรงดันฝั่ง A</div><div class="v" id="vA">0<small>bar</small></div></div>
+        <div class="meter"><div class="k">แรงดันฝั่ง B</div><div class="v" id="vB">0<small>bar</small></div></div>
+        <div class="meter"><div class="k">ระยะเบรกครั้งล่าสุด</div><div class="v"><span id="mD">–</span><small>% ช่วงชัก</small></div></div>
+        <div class="meter"><div class="k">เวลาเบรกครั้งล่าสุด</div><div class="v"><span id="mT">–</span><small>s</small></div></div>
+      </div>
+
+      <div class="box sliders">
+        <label class="sl" for="rP"><span>ค่าตั้ง Relief ของวาล์วเบรก (สูง = หยุดเร็วขึ้น แต่กระแทกมากขึ้น)</span><output id="oP">120 bar</output><input type="range" id="rP" min="60" max="210" step="10" value="120"></label>
+        <label class="sl" for="rM"><span>น้ำหนักโหลด (แรงเฉื่อย)</span><output id="oM">2.0 t</output><input type="range" id="rM" min="0.5" max="4" step="0.5" value="2"></label>
+      </div>
+
+      <div class="box">
+        <ol id="steps">
+          <li>ยืดหรือหดตามปกติ ปั๊มจ่ายน้ำมันผ่าน DCV แรงดันยังต่ำกว่าค่าตั้ง วาล์วเบรกจึงปิดอยู่</li>
+          <li>ปิด DCV ขณะโหลดยังวิ่ง แรงเฉื่อยดันลูกสูบต่อ แรงดันฝั่งขาออกพุ่งสูงขึ้น</li>
+          <li>Relief ฝั่งขาออกเปิดที่ค่าตั้ง ระบายน้ำมันและคุมแรงดันไว้ แรงดันนี้เป็นแรงเบรกให้โหลดหยุดอย่างนุ่มนวล</li>
+          <li>ฝั่งขาเข้าถูก DCV ตัดน้ำมัน Check valve จึงเติมน้ำมันจาก T เข้าไป ป้องกัน cavitation</li>
+          <li>ไม่มีวาล์วเบรก: โหลดหยุดกระชาก แรงดันกระแทกสูงมาก และฝั่งขาเข้าเกิดโพรงอากาศ</li>
+        </ol>
+      </div>
+
+      <div class="legend">
+        <span><i style="background:var(--press)"></i>แรงดันสูง</span>
+        <span><i style="background:var(--ret)"></i>ไหลกลับ / ถัง</span>
+        <span><i style="background:var(--low)"></i>ฝั่งขาเข้า แรงดันต่ำ</span>
+        <span><i style="background:var(--idle)"></i>น้ำมันค้าง ไม่ไหล</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const NS="http://www.w3.org/2000/svg", $=id=>document.getElementById(id);
+  const parts=$("parts"), pipeG=$("pipes");
+  function el(tag,a,parent){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);(parent||parts).appendChild(e);return e;}
+  function txt(x,y,s,cls,anc,parent){const t=el("text",{x,y,class:cls,"text-anchor":anc||"start"},parent);t.textContent=s;return t;}
+  function zig(x0,y0,x1,y1,n,h){const p=[];const dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L;p.push([x0,y0]);for(let i=1;i<n;i++){const t=i/n,s=i%2?h:-h;p.push([x0+dx*t+nx*s,y0+dy*t+ny*s]);}p.push([x1,y1]);return p.map(q=>q.map(v=>v.toFixed(1)).join(",")).join(" ");}
+
+  // ---------- pipes ----------
+  const P={};
+  function pipe(id,d){const b=el("path",{d,class:"pipe"},pipeG),f=el("path",{d,class:"flow"},pipeG);P[id]={b,f,k:""};}
+  pipe("A1","M112 72 V240"); pipe("A2","M112 240 V300"); pipe("A3","M112 300 V385 H168 V410");
+  pipe("B1","M248 72 V240"); pipe("B2","M248 240 V300"); pipe("B3","M248 300 V385 H192 V410");
+  pipe("RA","M112 240 H180"); pipe("RB","M248 240 H180");
+  pipe("CT","M180 240 V300");
+  pipe("CA","M180 300 H112"); pipe("CB","M180 300 H248");
+  pipe("TT","M180 352 V300");
+  pipe("PP","M120 492 V470 H168 V446");
+  pipe("TD","M192 446 V470 H250 V528");
+  function setPipe(id,kind,flow){const p=P[id],key=kind+flow;if(p.k===key)return;p.k=key;
+    p.b.setAttribute("class","pipe"+(kind?" "+kind:""));p.f.setAttribute("class","flow"+(flow?" "+flow:""));}
+  function tank(x,y){el("path",{d:`M${x-9} ${y} V${y+8} H${x+9} V${y}`,class:"ink","stroke-width":1.8});}
+
+  // ---------- cylinder + load ----------
+  const cyl=el("g",{});
+  const chA=el("rect",{x:102,y:42,width:4,height:28,class:"ch"},cyl);
+  const chB=el("rect",{x:110,y:42,width:148,height:28,class:"ch"},cyl);
+  const bubA=el("g",{class:"bubs"},cyl), bubB=el("g",{class:"bubs"},cyl);
+  [[0,0],[6,8],[-4,14],[8,18]].forEach(([dx,dy])=>{
+    const a=el("circle",{cx:0,cy:0,r:2.6,class:"bub",transform:`translate(${dx},${dy})`},bubA);
+    const b=el("circle",{cx:0,cy:0,r:2.6,class:"bub",transform:`translate(${dx},${dy})`},bubB);
+    a.style.transformBox=b.style.transformBox="fill-box";a.style.transformOrigin=b.style.transformOrigin="center";
+  });
+  const mover=el("g",{},cyl);
+  el("rect",{x:0,y:42,width:6,height:28,class:"inkf"},mover);
+  el("rect",{x:6,y:53,width:150,height:6,fill:"var(--steel)",stroke:"var(--ink)","stroke-width":1.2},mover);
+  el("rect",{x:156,y:30,width:50,height:52,rx:3,fill:"var(--load)",stroke:"var(--ink)","stroke-width":1.4},mover);
+  const loadTxt=txt(181,55,"2.0 t","val","middle",mover); loadTxt.setAttribute("fill","#fff");
+  txt(181,67,"LOAD","num","middle",mover).setAttribute("fill","#fff");
+  el("circle",{cx:167,cy:87,r:4.5,class:"bx"},mover); el("circle",{cx:195,cy:87,r:4.5,class:"bx"},mover);
+  el("rect",{x:100,y:40,width:160,height:32,class:"ink","stroke-width":2},cyl);
+  el("line",{x1:256,y1:92,x2:396,y2:92,class:"ink"},cyl);
+  txt(100,30,"กระบอกสูบ + โหลดแรงเฉื่อยสูง","lbl","start",cyl);
+  txt(104,86,"A","tag"); txt(254,86,"B","tag");
+  const gA=txt(104,180,"0 bar","val","end"), gB=txt(256,180,"0 bar","val");
+
+  // one-way flow control symbols (static)
+  function flowCtl(x,y){el("rect",{x:x-11,y,width:22,height:28,class:"bx"});
+    el("path",{d:`M${x-5} ${y+5} Q${x} ${y+14} ${x-5} ${y+23} M${x+5} ${y+5} Q${x} ${y+14} ${x+5} ${y+23}`,class:"ink"});
+    el("line",{x1:x-8,y1:y+23,x2:x+8,y2:y+5,class:"ink","marker-end":"url(#ah)"});}
+  flowCtl(112,112); flowCtl(248,112);
+  txt(86,130,"คุมความเร็ว","lbl","end");
+
+  // ---------- brake valve block ----------
+  const block=el("g",{id:"block"});
+  el("rect",{x:94,y:206,width:172,height:122,fill:"none",stroke:"var(--muted)","stroke-dasharray":"5 4"},block);
+  txt(268,222,"วาล์วเบรก","tag","start",block);
+  txt(268,234,"Brake valve","num","start",block);
+  function relief(x,dir,parent){ // box centred x at y 228-252; dir=+1 arrow points right
+    const g=el("g",{},parent);
+    el("rect",{x:x-15,y:228,width:30,height:24,class:"bx"},g);
+    const ar=el("g",{},g);
+    el("line",{x1:x-10*dir,y1:240,x2:x+10*dir,y2:240,class:"ink","marker-end":"url(#ah)"},ar);
+    el("polyline",{points:zig(x,228,x,208,5,4),class:"ink"},g);
+    el("line",{x1:x-6,y1:208,x2:x+6,y2:208,class:"ink","stroke-width":2},g);
+    el("path",{d:`M${x-22*dir} 240 V258 H${x} V252`,class:"ink","stroke-dasharray":"2 2"},g);
+    return ar;
+  }
+  const arA=relief(146,1,block), arB=relief(214,-1,block);
+  function check(x,dir,parent){ // flow allowed from centre (180) outward
+    const g=el("g",{},parent);
+    el("path",{d:`M${x+7*dir} 292 L${x+1*dir} 300 L${x+7*dir} 308`,class:"ink","stroke-width":1.6},g);
+    const ball=el("circle",{cx:x-4*dir,cy:300,r:5,class:"bx"},g);
+    return ball;
+  }
+  const ballA=check(146,1,block), ballB=check(214,-1,block);
+  txt(146,276,"Relief A→T","num","middle",block); txt(214,276,"Relief B→T","num","middle",block);
+  txt(146,320,"Check T→A","num","middle",block); txt(214,320,"Check T→B","num","middle",block);
+  tank(180,352); txt(194,360,"T","tag");
+
+  // ---------- DCV 4/3 ----------
+  el("rect",{x:80,y:406,width:200,height:44,fill:"none",stroke:"var(--rule)","stroke-dasharray":"3 3"});
+  const spool=el("g",{});
+  [[120,"L"],[160,"C"],[200,"R"]].forEach(([x])=>el("rect",{x,y:410,width:40,height:36,class:"bx"},spool));
+  // left (extend): parallel
+  el("line",{x1:128,y1:442,x2:128,y2:414,class:"ink","marker-end":"url(#ah)"},spool);
+  el("line",{x1:152,y1:414,x2:152,y2:442,class:"ink","marker-end":"url(#ah)"},spool);
+  // centre closed
+  el("path",{d:"M168 410 V418 M164 418 H172 M192 410 V418 M188 418 H196 M168 446 V438 M164 438 H172 M192 446 V438 M188 438 H196",class:"ink"},spool);
+  // right (retract): cross
+  el("line",{x1:208,y1:442,x2:232,y2:414,class:"ink","marker-end":"url(#ah)"},spool);
+  el("line",{x1:208,y1:414,x2:232,y2:442,class:"ink","marker-end":"url(#ah)"},spool);
+  const solL=el("rect",{x:64,y:418,width:16,height:20,class:"bx"}), solR=el("rect",{x:280,y:418,width:16,height:20,class:"bx"});
+  el("line",{x1:64,y1:438,x2:80,y2:418,class:"ink"}); el("line",{x1:280,y1:438,x2:296,y2:418,class:"ink"});
+  txt(166,404,"A","num","end"); txt(194,404,"B","num"); txt(166,458,"P","num","end"); txt(194,458,"T","num");
+  txt(300,432,"DCV 4/3","tag"); txt(300,444,"สปริงคืนกลาง","num");
+
+  // pump unit
+  el("circle",{cx:120,cy:510,r:17,class:"bx"}); el("path",{d:"M120 494 L113 506 L127 506z",class:"inkf"});
+  el("line",{x1:120,y1:527,x2:120,y2:540,class:"ink"}); tank(120,540);
+  txt(92,514,"ปั๊ม","lbl","end"); txt(92,526,"(มี relief หลัก)","num","end");
+  tank(250,528); txt(264,536,"T","tag");
+
+  // ---------- state ----------
+  const S={dcv:0,dcvS:0,x:0,v:0,pA:0,pB:0,spike:0,spikeSide:0,brake:null,last:null,cav:0,mode:"idle",demo:null};
+  const cfg={pr:120,m:2};
+  const bRet=$("bRet"),bMid=$("bMid"),bExt=$("bExt"),noBrake=$("noBrake"),demoBtn=$("demoBtn");
+  const steps=[...document.querySelectorAll("#steps li")];
+  function setDcv(d){S.dcv=d;bRet.setAttribute("aria-pressed",d===-1);bMid.setAttribute("aria-pressed",d===0);bExt.setAttribute("aria-pressed",d===1);}
+  function stopDemo(){if(S.demo){S.demo=null;demoBtn.classList.remove("on");demoBtn.textContent="▶ สาธิตอัตโนมัติ (มีวาล์วเบรก เทียบกับไม่มี)";}}
+  bRet.onclick=()=>{stopDemo();setDcv(-1);}; bMid.onclick=()=>{stopDemo();setDcv(0);}; bExt.onclick=()=>{stopDemo();setDcv(1);};
+  noBrake.onchange=()=>{$("block").classList.toggle("off",noBrake.checked);};
+  function bindRange(id,key,fmt){const r=$(id),o=$("o"+id.slice(1));const f=()=>{cfg[key]=+r.value;o.textContent=fmt(+r.value);};r.addEventListener("input",f);f();}
+  bindRange("rP","pr",v=>v+" bar"); bindRange("rM","m",v=>v.toFixed(1)+" t");
+
+  demoBtn.onclick=()=>{
+    if(S.demo){stopDemo();return;}
+    setDcv(0);noBrake.checked=false;noBrake.onchange();
+    S.demo={step:0,t:0,h:0};demoBtn.classList.add("on");demoBtn.textContent="■ หยุดการสาธิต";
+  };
+  function runDemo(dt){
+    const d=S.demo;if(!d)return;d.t+=dt;const nx=()=>{d.step++;d.t=0;d.h=0;};
+    const still=Math.abs(S.v)<1e-4;
+    switch(d.step){
+      case 0: if(d.t>0.6){setDcv(1);nx();}break;
+      case 1: if(S.x>=0.4){setDcv(0);nx();}break;
+      case 2: if(still){d.h+=dt;if(d.h>1.6){setDcv(-1);nx();}}break;
+      case 3: if(S.x<=0.35){setDcv(0);nx();}break;
+      case 4: if(still){d.h+=dt;if(d.h>1.6){if(S.x>0.05){setDcv(-1);}nx();}}break;
+      case 5: if(S.x<=0){setDcv(0);d.h+=dt;if(d.h>0.6){noBrake.checked=true;noBrake.onchange();nx();}}break;
+      case 6: if(d.t>1.2){setDcv(1);nx();}break;
+      case 7: if(S.x>=0.4){setDcv(0);nx();}break;
+      case 8: if(d.t>2.6){setDcv(-1);nx();}break;
+      case 9: if(S.x<=0){setDcv(0);d.h+=dt;if(d.h>0.8){noBrake.checked=false;noBrake.onchange();stopDemo();}}break;
+    }
+  }
+
+  const shakeT=$("parts").parentNode;
+  function shock(){shakeT.classList.remove("shake");void shakeT.getBBox();shakeT.classList.add("shake");}
+
+  let last=performance.now();
+  function tick(now){
+    const dt=Math.min(0.05,(now-last)/1000);last=now;
+    runDemo(dt);
+    const hasBrake=!noBrake.checked, m=cfg.m;
+    let mode="idle";
+    if(S.dcv!==0){
+      const vt=S.dcv>0?0.32:-0.42;
+      S.v+=(vt-S.v)*Math.min(1,dt*2.2/m);
+      mode="drive";
+      if(S.brake){S.brake=null;}
+    } else if(Math.abs(S.v)>1e-4){
+      if(!S.brake) S.brake={x0:S.x,t:0,dir:Math.sign(S.v)};
+      if(hasBrake){
+        const a=0.0042*cfg.pr/m, nv=S.v-Math.sign(S.v)*a*dt;
+        S.v=Math.sign(nv)!==Math.sign(S.v)?0:nv; mode="brake";
+      } else {
+        S.spikeSide=Math.sign(S.v); S.spike=Math.min(420,260+70*m+Math.abs(S.v)*200); S.cav=0.9; S.v=0; shock(); mode="shock";
+      }
+    }
+    S.x+=S.v*dt;
+    if(S.x>=1){S.x=1;if(S.v>0)S.v=0;} if(S.x<=0){S.x=0;if(S.v<0)S.v=0;}
+    if(S.brake){S.brake.t+=dt;if(Math.abs(S.v)<1e-4){S.last={d:Math.abs(S.x-S.brake.x0),t:S.brake.t,hard:!hasBrake};S.brake=null;}}
+    if(mode==="idle"&&S.dcv!==0) mode="drive";
+    const atEnd=S.dcv!==0&&Math.abs(S.v)<1e-3&&((S.dcv>0&&S.x>=1)||(S.dcv<0&&S.x<=0));
+
+    // pressures
+    let tA=0,tB=0;
+    if(mode==="drive"){ if(atEnd){ if(S.dcv>0)tA=160; else tB=160; } else if(S.dcv>0){tA=30+12*m;tB=6;} else {tB=45+14*m;tA=6;} }
+    else if(mode==="brake"){ if(S.v>0){tB=cfg.pr;tA=1;} else {tA=cfg.pr;tB=1;} }
+    S.pA+=(tA-S.pA)*Math.min(1,dt*8); S.pB+=(tB-S.pB)*Math.min(1,dt*8);
+    S.spike=Math.max(0,S.spike-dt*420); S.cav=Math.max(0,S.cav-dt*0.5);
+    let showA=S.pA, showB=S.pB;
+    if(S.spike>0){ if(S.spikeSide>0) showB=Math.max(showB,S.spike); else showA=Math.max(showA,S.spike); }
+    const cavA=S.cav>0&&S.spikeSide>0, cavB=S.cav>0&&S.spikeSide<0;
+
+    // spool
+    S.dcvS+=(S.dcv-S.dcvS)*Math.min(1,dt*12);
+    spool.setAttribute("transform",`translate(${(S.dcvS*40).toFixed(2)},0)`);
+    solL.style.fill=S.dcv===1?"var(--accent)":""; solR.style.fill=S.dcv===-1?"var(--accent)":"";
+
+    // cylinder
+    const px=104+S.x*76;
+    mover.setAttribute("transform",`translate(${px.toFixed(2)},0)`);
+    chA.setAttribute("width",Math.max(0,px-102)); chB.setAttribute("x",px+6); chB.setAttribute("width",Math.max(0,258-(px+6)));
+    const hiA=showA>20, hiB=showB>20;
+    chA.setAttribute("class","ch"+(hiA?" p":(mode!=="idle"||cavA?" r":"")));
+    chB.setAttribute("class","ch"+(hiB?" p":(mode!=="idle"||cavB?" r":"")));
+    bubA.setAttribute("transform",`translate(${(102+Math.max(4,px-102)/2).toFixed(1)},48)`);
+    bubB.setAttribute("transform",`translate(${((px+6+258)/2).toFixed(1)},48)`);
+    bubA.setAttribute("class","bubs"+(cavA?" go":"")); bubB.setAttribute("class","bubs"+(cavB?" go":""));
+    loadTxt.textContent=m.toFixed(1)+" t";
+
+    // pipes
+    const mv=Math.abs(S.v)>1e-3;
+    const relA=mode==="brake"&&S.v<0, relB=mode==="brake"&&S.v>0;
+    ["A1","A2","A3","B1","B2","B3","RA","RB","CT","CA","CB","TT"].forEach(k=>setPipe(k,"",""));
+    setPipe("PP","p","fwd"); setPipe("TD","r",mode==="drive"&&mv?"fwd":"");
+    if(mode==="drive"){
+      const ext=S.dcv>0;
+      ["A1","A2","A3"].forEach(k=>setPipe(k,ext?"p":"r",mv?(ext?"rev":"fwd"):""));
+      ["B1","B2","B3"].forEach(k=>setPipe(k,ext?"r":"p",mv?(ext?"fwd":"rev"):""));
+    } else if(mode==="brake"){
+      if(relB){ setPipe("B1","p","fwd"); setPipe("B2","p",""); setPipe("B3","p",""); setPipe("RB","p","fwd");
+        setPipe("CT","r","fwd"); setPipe("TT","r","fwd"); setPipe("CA","l","fwd"); setPipe("A2","l","rev"); setPipe("A1","l","rev"); setPipe("A3","l",""); }
+      else { setPipe("A1","p","fwd"); setPipe("A2","p",""); setPipe("A3","p",""); setPipe("RA","p","fwd");
+        setPipe("CT","r","fwd"); setPipe("TT","r","rev"); setPipe("CB","l","fwd"); setPipe("B2","l","rev"); setPipe("B1","l","rev"); setPipe("B3","l",""); }
+    } else if(S.spike>0){
+      if(S.spikeSide>0){["B1","B2","B3"].forEach(k=>setPipe(k,"p",""));} else {["A1","A2","A3"].forEach(k=>setPipe(k,"p",""));}
+    }
+    arA.setAttribute("transform",relA?"translate(0,-0.01) translate(0,6)":""); arB.setAttribute("transform",relB?"translate(0,6)":"");
+    ballA.setAttribute("transform",relB?"translate(-5,0)":""); ballB.setAttribute("transform",relA?"translate(5,0)":"");
+
+    // readouts
+    const fA=Math.round(showA), fB=Math.round(showB);
+    gA.textContent=(cavA?"สุญญากาศ":fA+" bar"); gB.textContent=(cavB?"สุญญากาศ":fB+" bar");
+    gA.setAttribute("class","val"+(fA>220||cavA?" hot":"")); gB.setAttribute("class","val"+(fB>220||cavB?" hot":""));
+    const vA=$("vA"),vB=$("vB");
+    vA.innerHTML=(cavA?"&lt;0":fA)+"<small>bar</small>"; vB.innerHTML=(cavB?"&lt;0":fB)+"<small>bar</small>";
+    vA.classList.toggle("hot",fA>220||cavA); vB.classList.toggle("hot",fB>220||cavB);
+    if(S.last){$("mD").textContent=(S.last.d*100).toFixed(1);$("mT").textContent=S.last.t.toFixed(2);}
+    $("cRA").classList.toggle("on",relA); $("cRB").classList.toggle("on",relB);
+    $("cCA").classList.toggle("on",relB); $("cCB").classList.toggle("on",relA);
+    $("cCav").classList.toggle("bad",cavA||cavB);
+
+    let s,sub,act=[],warn=false;
+    if(S.spike>0||S.cav>0.3){s="หยุดกระชาก! ไม่มีวาล์วเบรก";sub="แรงดันกระแทกฝั่งขาออกพุ่งถึง "+Math.round(Math.max(showA,showB,S.spike))+" bar ฝั่งขาเข้าขาดน้ำมันจนเกิดโพรงอากาศ ท่อ ซีล และโครงเครื่องรับแรงกระแทกเต็ม ๆ";act=[4];warn=true;}
+    else if(mode==="brake"){const side=S.v>0?"B":"A",inn=S.v>0?"A":"B";s="กำลังเบรก โหลดยังไหลต่อด้วยแรงเฉื่อย";sub="Relief ฝั่ง "+side+" เปิดคุมแรงดันไว้ที่ "+cfg.pr+" bar เป็นแรงเบรก ส่วน check valve เติมน้ำมันจาก T เข้าฝั่ง "+inn+" "+(S.v>0?"(ฝั่งหัวสูบต้องการน้ำมันมากกว่า จึงดึงจากถังเพิ่ม)":"(น้ำมันส่วนเกินไหลลงถัง)");act=[1,2,3];}
+    else if(mode==="drive"&&atEnd){s=S.dcv>0?"ยืดสุดช่วงชัก":"หดสุดช่วงชัก";sub="ลูกสูบชนสุดทาง ปั๊มระบายผ่าน relief หลักของชุดปั๊ม";act=[0];}
+    else if(mode==="drive"){s=S.dcv>0?"กำลังยืดออก":"กำลังหดกลับ";sub="แรงดันขับยังต่ำกว่าค่าตั้งของวาล์วเบรก วาล์วเบรกจึงปิดอยู่ น้ำมันผ่าน DCV ตามปกติ กด “กลาง” เพื่อดูการเบรก";act=[0];}
+    else if(S.last){s="หยุดแล้ว";sub=S.last.hard?"หยุดทันทีในระยะ "+(S.last.d*100).toFixed(1)+"% แต่แลกกับแรงกระแทก ลองเอาเครื่องหมายถูกออกเพื่อใส่วาล์วเบรกคืน":"เบรกจนหยุดในระยะ "+(S.last.d*100).toFixed(1)+"% ของช่วงชัก ใช้เวลา "+S.last.t.toFixed(2)+" s ลองปรับค่าตั้ง relief หรือน้ำหนักโหลดแล้วเบรกใหม่";}
+    else {s="โหลดหยุดนิ่ง";sub="กด “ยืด” ให้โหลดวิ่ง แล้วกด “กลาง” ระหว่างทางเพื่อดูวาล์วเบรกทำงาน";}
+    const st=$("status");st.textContent=s;st.classList.toggle("warn",warn);$("statusSub").textContent=sub;
+    steps.forEach((li,i)=>li.classList.toggle("act",act.includes(i)));
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body></html>

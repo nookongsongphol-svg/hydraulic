@@ -1,0 +1,449 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}.back{display:inline-block;margin:12px 16px 0;font:600 14px system-ui,sans-serif;color:#2463c9;text-decoration:none}</style></head><body><a class="back" href="index.html">← กลับหน้าเมนู</a>
+<title>ชุดวาล์วเครื่องอัด Yuken</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: press + sandwich valve stack schematic on the left, control desk on the right; stacks on phones */
+:root{
+  --paper:#eef3f6; --sheet:#fbfdfe; --ink:#1b2833; --muted:#5a6a77; --rule:#cfd9e0;
+  --press:#d2382c; --ret:#2463c9; --idle:#a3b3c0;
+  --press-fill:rgba(210,56,44,.28); --ret-fill:rgba(36,99,201,.2); --idle-fill:rgba(143,163,179,.18);
+  --steel:#dfe6eb; --accent:#e0a21b; --ok:#1f8a5b; --warn:#c2410c;
+  --frame:#2f5ea8; --plate:#7cc47f; --mold:#e9e2d4;
+  --f-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0d151c; --sheet:#131e27; --ink:#e2e9ef; --muted:#93a4b2; --rule:#273643;
+  --press:#ff6b5d; --ret:#62a0ff; --idle:#4d6273;
+  --press-fill:rgba(255,107,93,.3); --ret-fill:rgba(98,160,255,.24); --idle-fill:rgba(93,115,133,.25);
+  --steel:#2a3a47; --accent:#f2b739; --ok:#3fc386; --warn:#fb923c;
+  --frame:#5b8ad6; --plate:#4e9a55; --mold:#5b5547; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0d151c; --sheet:#131e27; --ink:#e2e9ef; --muted:#93a4b2; --rule:#273643;
+  --press:#ff6b5d; --ret:#62a0ff; --idle:#4d6273;
+  --press-fill:rgba(255,107,93,.3); --ret-fill:rgba(98,160,255,.24); --idle-fill:rgba(93,115,133,.25);
+  --steel:#2a3a47; --accent:#f2b739; --ok:#3fc386; --warn:#fb923c;
+  --frame:#5b8ad6; --plate:#4e9a55; --mold:#5b5547; color-scheme:dark}
+html{background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+header{display:flex;flex-direction:column;gap:2px;margin-bottom:16px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--f-display);font-size:clamp(24px,4vw,34px);line-height:1.2;margin:0;text-wrap:balance}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:880px){.grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:8px;min-width:0}
+svg{display:block;width:100%;height:auto;max-height:90vh}
+.panel{display:flex;flex-direction:column;gap:14px;min-width:0}
+.box{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.status{font-family:var(--f-display);font-size:19px;line-height:1.35;margin:0 0 4px}
+.status.warn{color:var(--warn)}
+.sub{color:var(--muted);margin:0;font-size:14px}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+button{font:600 15px var(--f-body);color:var(--ink);background:var(--steel);border:1px solid var(--rule);border-radius:8px;padding:11px 8px;cursor:pointer}
+button small{display:block;font-weight:400;font-size:12px;opacity:.8}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#motorBtn,#demoBtn{grid-column:1/-1}
+#motorBtn[aria-pressed="true"]{background:var(--press);color:#fff;border-color:transparent}
+.dcv[aria-pressed="true"]{background:var(--ink);color:var(--sheet);border-color:transparent}
+#demoBtn{background:transparent}
+#demoBtn.on{border-color:var(--accent);color:var(--accent)}
+fieldset{grid-column:1/-1;border:1px solid var(--rule);border-radius:8px;margin:0;padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px}
+legend{font-size:12px;color:var(--muted);padding:0 4px}
+fieldset label,.tog{display:flex;align-items:center;gap:8px;font-size:14px}
+fieldset input{accent-color:var(--accent);width:16px;height:16px;flex:none}
+.tog{grid-column:1/-1}
+.tog input{width:18px;height:18px;accent-color:var(--warn);flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--idle-fill);color:var(--muted);border:1px solid var(--rule)}
+.chip.on{background:var(--ok);color:#fff;border-color:transparent}
+.chip.bad{background:var(--warn);color:#fff;border-color:transparent}
+.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.meter .k{font-size:12px;color:var(--muted)}
+.meter .v{font-family:var(--f-mono);font-size:21px;font-variant-numeric:tabular-nums}
+.meter .v small{font-size:12px;color:var(--muted);margin-left:3px}
+.sliders{display:grid;gap:10px}
+.sl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;font-size:14px}
+.sl input{grid-column:1/-1;width:100%;accent-color:var(--press)}
+.sl output{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums}
+.sl span{min-width:0}
+ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:s}
+ol li{counter-increment:s;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;font-size:14px;color:var(--muted);padding:6px 8px;border-radius:8px;transition:background .25s,color .25s}
+ol li::before{content:counter(s);font:600 13px var(--f-mono);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--rule)}
+ol li.act{color:var(--ink);background:var(--idle-fill)}
+ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.parts-list{display:grid;gap:8px;font-size:14px}
+.parts-list div{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr);gap:10px}
+.parts-list code{font-family:var(--f-mono);font-size:12.5px;color:var(--ink);overflow-wrap:anywhere}
+.parts-list span{color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:22px;height:4px;border-radius:2px;display:inline-block}
+
+.ink{stroke:var(--ink);fill:none;stroke-width:1.4}
+.inkf{fill:var(--ink)}
+.bx{fill:var(--sheet);stroke:var(--ink);stroke-width:1.4}
+.tag{font-family:var(--f-mono);font-size:9.5px;fill:var(--ink);font-weight:500}
+.num{font-family:var(--f-mono);font-size:8.5px;fill:var(--muted)}
+.lbl{font-family:var(--f-body);font-size:9.5px;fill:var(--muted)}
+.val{font-family:var(--f-mono);font-size:10px;font-weight:500;fill:var(--ink)}
+.pipe{fill:none;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round;stroke:var(--idle);transition:stroke .2s}
+.pipe.p{stroke:var(--press)} .pipe.r{stroke:var(--ret)}
+.pipe.thin{stroke-width:2.6}
+.flow{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sheet);stroke-dasharray:3 10;opacity:0}
+.flow.fwd,.flow.rev{opacity:.95;animation:dash .5s linear infinite}
+.flow.rev{animation-direction:reverse}
+@keyframes dash{to{stroke-dashoffset:-13}}
+.ch{fill:var(--idle-fill);transition:fill .2s} .ch.p{fill:var(--press-fill)} .ch.r{fill:var(--ret-fill)}
+.pil{stroke:var(--muted);stroke-width:1.2;fill:none;stroke-dasharray:3 2;transition:stroke .2s}
+.pil.on{stroke:var(--press);stroke-width:1.8}
+.ball{transition:transform .15s}
+.sol{fill:var(--sheet);stroke:var(--ink);stroke-width:1.4;transition:fill .2s}
+.sol.on{fill:var(--accent)}
+.spin{animation:spin .7s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.flow.fwd,.flow.rev{animation:none;stroke-dasharray:none;opacity:.35}.spin{animation:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Yuken sandwich stack · DSG-03 + MPW-03 + MSW-03 · CROSS relief</span>
+    <h1>ชุดวาล์วไฮดรอลิกเครื่องอัด จากเครื่องจริง</h1>
+  </header>
+
+  <div class="grid">
+    <div class="sheet">
+      <svg viewBox="0 0 420 705" role="img" aria-label="แผนผังวงจรไฮดรอลิกเครื่องอัดแบบเคลื่อนไหว">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10z" class="inkf"/>
+          </marker>
+        </defs>
+        <g id="under"></g>
+        <g id="pipes"></g>
+        <g id="parts"></g>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <div class="box" aria-live="polite">
+        <p class="status" id="status">มอเตอร์หยุด</p>
+        <p class="sub" id="statusSub">กด “เปิดมอเตอร์” แล้วสั่ง SOL a ให้แรมลงอัด</p>
+      </div>
+
+      <div class="box controls">
+        <button id="motorBtn" aria-pressed="false">เปิดมอเตอร์ปั๊ม</button>
+        <button class="dcv" id="bA" aria-pressed="false">SOL a<small>แรมลง / อัด</small></button>
+        <button class="dcv" id="bMid" aria-pressed="true">กลาง<small>ตัดไฟทั้งคู่</small></button>
+        <button class="dcv" id="bB" aria-pressed="false">SOL b<small>แรมขึ้น</small></button>
+        <fieldset>
+          <legend>ช่องกลางของวาล์ว DSG-03-3C60</legend>
+          <label><input type="radio" name="ctr" id="ctrABT" value="abt" checked> P ปิด, A และ B ลงถัง</label>
+          <label><input type="radio" name="ctr" id="ctrOpen" value="open"> ทุกพอร์ตลงถัง (ปั๊มอันโหลด)</label>
+        </fieldset>
+        <label class="tog" for="leak"><input type="checkbox" id="leak"> จำลอง pilot check (MPW) ชำรุด / รั่ว</label>
+        <button id="demoBtn">▶ สาธิตอัตโนมัติ ครบรอบอัด</button>
+      </div>
+
+      <div class="box chips" aria-label="สถานะวาล์ว">
+        <span class="chip" id="cSa">SOL a</span>
+        <span class="chip" id="cSb">SOL b</span>
+        <span class="chip" id="cPA">Pilot check A เปิด</span>
+        <span class="chip" id="cPB">Pilot check B เปิด</span>
+        <span class="chip" id="cRV">Relief ระบาย</span>
+        <span class="chip" id="cDrift">แรมไหลลงเอง</span>
+      </div>
+
+      <div class="box meters">
+        <div class="meter"><div class="k">เกจปั๊ม (FIT)</div><div class="v"><span id="mP">0</span><small>bar</small></div></div>
+        <div class="meter"><div class="k">แรงอัด (สมมติกระบอก Ø100)</div><div class="v"><span id="mF">0.0</span><small>ตัน</small></div></div>
+        <div class="meter"><div class="k">ตำแหน่งแรม</div><div class="v"><span id="mS">0</span><small>% ลง</small></div></div>
+        <div class="meter"><div class="k">แรงดันค้างฝั่ง B</div><div class="v"><span id="mB">0</span><small>bar</small></div></div>
+      </div>
+
+      <div class="box sliders">
+        <label class="sl" for="rRV"><span>CROSS relief valve: ค่าตั้งแรงดันสูงสุด = แรงอัด</span><output id="oRV">100 bar</output><input type="range" id="rRV" min="20" max="200" step="5" value="100"></label>
+        <label class="sl" for="rTB"><span>MSW ปุ่มฝั่ง B: ความเร็วแรมลง (คุมน้ำมันออก)</span><output id="oTB">50 %</output><input type="range" id="rTB" min="5" max="100" step="5" value="50"></label>
+        <label class="sl" for="rTA"><span>MSW ปุ่มฝั่ง A: ความเร็วแรมขึ้น (คุมน้ำมันออก)</span><output id="oTA">70 %</output><input type="range" id="rTA" min="5" max="100" step="5" value="70"></label>
+      </div>
+
+      <div class="box">
+        <ol id="steps">
+          <li>เปิดมอเตอร์ ปั๊มดูดน้ำมันจากถัง ส่งผ่าน CROSS relief และเกจ เข้าแผ่นฐานสีเขียวที่พอร์ต P</li>
+          <li>SOL a: P→A น้ำมันดัน pilot check ฝั่ง A เปิดขึ้นหัวกระบอก แรงดัน A ไปเปิด pilot check ฝั่ง B ให้น้ำมันไหลกลับ แรมลง</li>
+          <li>ขาลงมีน้ำหนักแรมช่วยดึง ปุ่ม MSW ฝั่ง B จึงหรี่น้ำมันขาออกเพื่อคุมความเร็ว ไม่ให้แรมตกเร็ว</li>
+          <li>แรมแตะแม่พิมพ์ แรงดันขึ้นจนถึงค่าตั้ง relief แรงดันนี้คือแรงอัด</li>
+          <li>SOL b: P→B แรมยกขึ้น ความเร็วคุมด้วยปุ่ม MSW ฝั่ง A</li>
+          <li>ตำแหน่งกลาง: A และ B ลงถัง pilot check ปิดทั้งคู่ ล็อกน้ำมันไว้ แรมค้างอยู่กับที่ไม่ไหลลง</li>
+          <li>ถ้าช่องกลาง P ปิด ปั๊มต้องระบายผ่าน relief ที่แรงดันเต็มตลอดเวลา น้ำมันจะร้อน</li>
+        </ol>
+      </div>
+
+      <div class="box parts-list">
+        <div><code>DSG-03-3C60-A220</code><span>วาล์วควบคุมทิศทาง 4/3 โซลินอยด์ 220 VAC สปริงคืนกลาง (ชั้นบนสุด)</span></div>
+        <div><code>MPW-03-2-20</code><span>Pilot operated check แบบโมดูล ล็อกทั้งฝั่ง A และ B (ชั้นกลาง)</span></div>
+        <div><code>MSW-03-X-40</code><span>Throttle &amp; check แบบโมดูล ปรับความเร็ว A และ B แยกกัน (ชั้นล่าง)</span></div>
+        <div><code>Subplate สีเขียว</code><span>แผ่นฐานรับวาล์ว มีพอร์ต P, T และสาย A, B ออกไปกระบอกสูบ</span></div>
+        <div><code>CROSS relief + เกจ FIT</code><span>วาล์วระบายแรงดันหลัก และเกจแรงดันบนสาย P</span></div>
+      </div>
+
+      <p class="note">ทิศทาง SOL a/SOL b, ชนิดช่องกลาง และขนาดกระบอกสูบ เป็นค่าสมมติจากรูปถ่าย เครื่องจริงอาจต่อสลับกัน</p>
+
+      <div class="legend">
+        <span><i style="background:var(--press)"></i>แรงดันสูง</span>
+        <span><i style="background:var(--ret)"></i>ไหลกลับถัง</span>
+        <span><i style="background:var(--idle)"></i>ไม่มีแรงดัน / ค้าง</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const NS="http://www.w3.org/2000/svg", $=id=>document.getElementById(id);
+  const parts=$("parts"), pipeG=$("pipes"), under=$("under");
+  function el(tag,a,parent){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);(parent||parts).appendChild(e);return e;}
+  function txt(x,y,s,cls,anc,parent){const t=el("text",{x,y,class:cls,"text-anchor":anc||"start"},parent);t.textContent=s;return t;}
+  function zig(x0,y0,x1,y1,n,h){const dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L,p=[[x0,y0]];for(let i=1;i<n;i++){const t=i/n,s=i%2?h:-h;p.push([x0+dx*t+nx*s,y0+dy*t+ny*s]);}p.push([x1,y1]);return p.map(q=>q.map(v=>v.toFixed(1)).join(",")).join(" ");}
+
+  const CA=120, CB=160; // A and B columns through the stack
+
+  // ---------- press frame (under pipes) ----------
+  el("rect",{x:210,y:6,width:150,height:12,fill:"var(--frame)"},under);
+  el("rect",{x:220,y:18,width:7,height:220,fill:"var(--frame)",opacity:.55},under);
+  el("rect",{x:343,y:18,width:7,height:220,fill:"var(--frame)",opacity:.55},under);
+  el("rect",{x:210,y:236,width:150,height:10,fill:"var(--frame)"},under);
+  el("rect",{x:250,y:213,width:50,height:23,rx:2,fill:"var(--mold)",stroke:"var(--ink)","stroke-width":1.2},under);
+  txt(275,228,"แม่พิมพ์","lbl","middle",under);
+  el("rect",{x:CA-30,y:522,width:CB-CA+60,height:30,rx:3,fill:"var(--plate)",opacity:.75},under);
+
+  // ---------- pipes ----------
+  const P={};
+  function pipe(id,d,thin){const b=el("path",{d,class:"pipe"+(thin?" thin":"")},pipeG),f=el("path",{d,class:"flow"},pipeG);P[id]={b,f,k:"",thin};}
+  pipe("A0",`M250 30 H${CA} V296`); pipe("A1",`M${CA} 296 V376`); pipe("A2",`M${CA} 376 V470`);
+  pipe("B0",`M250 110 H${CB} V296`); pipe("B1",`M${CB} 296 V376`); pipe("B2",`M${CB} 376 V470`);
+  pipe("Ab",`M${CA} 350 H${CA+18} V312 H${CA}`,1); pipe("Bb",`M${CB} 350 H${CB+18} V312 H${CB}`,1);
+  pipe("P1","M90 632 V600"); pipe("P2",`M90 600 V570 H${CA} V510`);
+  pipe("RV",`M90 615 H${CB}`); pipe("GG","M90 594 H64",1);
+  pipe("T1",`M${CB} 510 V615`); pipe("T2",`M${CB} 615 V684`);
+  pipe("SU","M90 684 V668");
+  function setPipe(id,kind,flow){const p=P[id],key=kind+flow;if(p.k===key)return;p.k=key;
+    p.b.setAttribute("class","pipe"+(p.thin?" thin":"")+(kind?" "+kind:""));p.f.setAttribute("class","flow"+(flow?" "+flow:""));}
+
+  // ---------- cylinder ----------
+  const chA=el("rect",{x:252,y:22,width:46,height:2,class:"ch"});
+  const chB=el("rect",{x:252,y:30,width:46,height:88,class:"ch"});
+  const ram=el("g",{});
+  el("rect",{x:252,y:0,width:46,height:6,class:"inkf"},ram);
+  el("rect",{x:270,y:6,width:10,height:100,fill:"var(--steel)",stroke:"var(--ink)","stroke-width":1.2},ram);
+  el("rect",{x:235,y:106,width:80,height:12,rx:2,fill:"var(--steel)",stroke:"var(--ink)","stroke-width":1.4},ram);
+  el("rect",{x:250,y:20,width:50,height:100,class:"ink","stroke-width":2});
+  txt(362,40,"กระบอก","lbl"); txt(362,52,"สูบ","lbl");
+  txt(244,26,"A","tag","end"); txt(244,106,"B","tag","end");
+  const gA=txt(CA-6,200,"0 bar","val","end"), gB=txt(CB+6,200,"0 bar","val");
+
+  // ---------- module frames ----------
+  function modBox(y,h,code,desc){el("rect",{x:CA-34,y,width:CB-CA+84,height:h,fill:"none",stroke:"var(--muted)","stroke-dasharray":"5 4"});
+    txt(CB+56,y+16,code,"tag"); txt(CB+56,y+29,desc,"lbl");}
+  modBox(296,80,"MSW-03-X-40","Throttle & check");
+  modBox(376,90,"MPW-03-2-20","Pilot operated check");
+  txt(CB+56,338,"ปรับความเร็ว","lbl"); txt(CB+56,418,"ล็อกตำแหน่งแรม","lbl");
+  // port letters like the Yuken nameplate
+  [[CA,"A"],[CB,"B"]].forEach(([x,n])=>{txt(x-5,292,n,"num","end");});
+
+  // throttle + bypass check (MSW)
+  function throttle(x,y){el("path",{d:`M${x-6} ${y-9} Q${x} ${y} ${x-6} ${y+9} M${x+6} ${y-9} Q${x} ${y} ${x+6} ${y+9}`,class:"ink"});
+    el("line",{x1:x-9,y1:y+9,x2:x+9,y2:y-9,class:"ink","marker-end":"url(#ah)"});}
+  function check(x,y){ // free flow upward
+    const g=el("g",{});
+    el("path",{d:`M${x-6} ${y-1} L${x} ${y+7} L${x+6} ${y-1}`,class:"ink","stroke-width":1.6},g);
+    const b=el("circle",{cx:x,cy:y-1,r:4,class:"bx ball"},g);
+    return b;
+  }
+  throttle(CA,331); throttle(CB,331);
+  const mAb=check(CA+18,331), mBb=check(CB+18,331);
+  // pilot checks (MPW)
+  const pA=check(CA,410), pB=check(CB,410);
+  const pilA=el("path",{d:`M${CB} 446 V440 L${CA+8} 414`,class:"pil"}); // B pressure opens check A
+  const pilB=el("path",{d:`M${CA} 446 V440 L${CB-8} 414`,class:"pil"}); // A pressure opens check B
+
+  // ---------- DCV DSG-03 ----------
+  el("rect",{x:46,y:466,width:248,height:48,fill:"none",stroke:"var(--rule)","stroke-dasharray":"3 3"});
+  const spool=el("g",{});
+  [50,110,170].forEach(x=>el("rect",{x,y:470,width:60,height:40,class:"bx"},spool));
+  // left box (SOL a): P->A, B->T
+  el("line",{x1:CA-60,y1:506,x2:CA-60,y2:474,class:"ink","marker-end":"url(#ah)"},spool);
+  el("line",{x1:CB-60,y1:474,x2:CB-60,y2:506,class:"ink","marker-end":"url(#ah)"},spool);
+  // centre
+  const cABT=el("path",{d:`M${CA} 470 V490 H${CB} M${CB} 470 V510 M${CA} 510 V502 M${CA-6} 502 H${CA+6}`,class:"ink"},spool);
+  const cOpen=el("path",{d:`M${CA} 470 V510 M${CA} 490 H${CB} M${CB} 470 V510`,class:"ink",style:"display:none"},spool);
+  // right box (SOL b): P->B, A->T
+  el("line",{x1:CA+60,y1:506,x2:CB+60,y2:474,class:"ink","marker-end":"url(#ah)"},spool);
+  el("line",{x1:CA+60,y1:474,x2:CB+60,y2:506,class:"ink","marker-end":"url(#ah)"},spool);
+  const solA=el("rect",{x:30,y:478,width:16,height:24,class:"sol"}), solB=el("rect",{x:294,y:478,width:16,height:24,class:"sol"});
+  el("line",{x1:30,y1:502,x2:46,y2:478,class:"ink"}); el("line",{x1:294,y1:502,x2:310,y2:478,class:"ink"});
+  txt(38,474,"SOL a","num","middle"); txt(302,474,"SOL b","num","middle");
+  txt(316,488,"DSG-03-3C60","tag"); txt(316,500,"4/3 โซลินอยด์","lbl");
+  txt(CA-5,520,"P","num","end"); txt(CB+5,520,"T","num");
+  txt(CB+34,542,"แผ่นฐาน (Subplate)","lbl");
+
+  // ---------- pump unit ----------
+  el("rect",{x:CA+12,y:604,width:28,height:22,class:"bx"});
+  const rvArrow=el("line",{x1:CA+16,y1:615,x2:CA+36,y2:615,class:"ink","marker-end":"url(#ah)"});
+  el("polyline",{points:zig(CA+26,604,CA+26,588,5,4),class:"ink"});
+  el("path",{d:`M${CA+4} 615 V628 H${CA+26} V626`,class:"ink","stroke-dasharray":"2 2"});
+  txt(CA+44,598,"CROSS relief","tag"); txt(CA+44,610,"ระบายแรงดันเกิน","lbl");
+  // FIT gauge dial
+  el("circle",{cx:44,cy:594,r:22,fill:"var(--sheet)",stroke:"var(--ink)","stroke-width":1.8});
+  for(let i=0;i<=7;i++){const a=(-225+i*270/7)*Math.PI/180,r1=18,r2=i%1?16:15;
+    el("line",{x1:44+Math.cos(a)*r1,y1:594+Math.sin(a)*r1,x2:44+Math.cos(a)*r2,y2:594+Math.sin(a)*r2,class:"ink","stroke-width":1});}
+  [[0,0],[3.5,175],[7,350]].forEach(([i,v])=>{const a=(-225+i*270/7)*Math.PI/180;txt(44+Math.cos(a)*12,594+Math.sin(a)*12+3,String(v),"num","middle");});
+  const needle=el("line",{x1:44,y1:594,x2:44,y2:576,stroke:"var(--press)","stroke-width":2,"stroke-linecap":"round"});
+  el("circle",{cx:44,cy:594,r:2.2,class:"inkf"});
+  txt(44,628,"เกจ FIT","num","middle");
+  // motor + pump
+  el("rect",{x:16,y:640,width:40,height:22,rx:3,class:"bx"}); txt(36,655,"M","tag","middle");
+  el("line",{x1:56,y1:651,x2:72,y2:651,class:"ink","stroke-width":2});
+  el("circle",{cx:90,cy:650,r:18,class:"bx"}); el("path",{d:"M90 633 L83 645 L97 645z",class:"inkf"});
+  const rotor=el("path",{d:"M90 657 m-5 0 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M90 652 V662 M85 657 H95",class:"ink","stroke-width":1});
+  txt(36,676,"มอเตอร์","lbl","middle"); txt(112,660,"ปั๊ม","lbl");
+  el("rect",{x:56,y:684,width:130,height:14,fill:"var(--ret-fill)"});
+  el("path",{d:"M54 676 V700 H188 V676",class:"ink","stroke-width":1.8});
+  txt(194,696,"ถังน้ำมัน","lbl");
+
+  // ---------- state ----------
+  const S={motor:false,dcv:0,dcvS:0,pos:0,pP:0,pA:0,pB:0,demo:null};
+  const cfg={rv:100,tb:50,ta:70};
+  const motorBtn=$("motorBtn"),bA=$("bA"),bMid=$("bMid"),bB=$("bB"),leak=$("leak"),demoBtn=$("demoBtn");
+  const steps=[...document.querySelectorAll("#steps li")];
+  function setMotor(v){S.motor=v;motorBtn.setAttribute("aria-pressed",v);motorBtn.textContent=v?"ปิดมอเตอร์ปั๊ม":"เปิดมอเตอร์ปั๊ม";rotor.classList.toggle("spin",v);}
+  function setDcv(d){S.dcv=d;bA.setAttribute("aria-pressed",d===1);bMid.setAttribute("aria-pressed",d===0);bB.setAttribute("aria-pressed",d===-1);
+    solA.classList.toggle("on",d===1);solB.classList.toggle("on",d===-1);}
+  function center(){return $("ctrOpen").checked?"open":"abt";}
+  function setCenter(c){$(c==="open"?"ctrOpen":"ctrABT").checked=true;cABT.style.display=c==="abt"?"":"none";cOpen.style.display=c==="open"?"":"none";}
+  function stopDemo(){if(S.demo){S.demo=null;demoBtn.classList.remove("on");demoBtn.textContent="▶ สาธิตอัตโนมัติ ครบรอบอัด";}}
+  motorBtn.onclick=()=>{stopDemo();setMotor(!S.motor);};
+  bA.onclick=()=>{stopDemo();setDcv(1);}; bMid.onclick=()=>{stopDemo();setDcv(0);}; bB.onclick=()=>{stopDemo();setDcv(-1);};
+  document.querySelectorAll('input[name="ctr"]').forEach(r=>r.addEventListener("change",()=>setCenter(center())));
+  function bindRange(id,key,fmt){const r=$(id),o=$("o"+id.slice(1));const f=()=>{cfg[key]=+r.value;o.textContent=fmt(+r.value);};r.addEventListener("input",f);f();}
+  bindRange("rRV","rv",v=>v+" bar"); bindRange("rTB","tb",v=>v+" %"); bindRange("rTA","ta",v=>v+" %");
+
+  demoBtn.onclick=()=>{
+    if(S.demo){stopDemo();return;}
+    setMotor(false);setDcv(0);setCenter("abt");leak.checked=false;
+    S.demo={step:0,t:0,h:0};demoBtn.classList.add("on");demoBtn.textContent="■ หยุดการสาธิต";
+  };
+  function runDemo(dt){
+    const d=S.demo;if(!d)return;d.t+=dt;const nx=()=>{d.step++;d.t=0;d.h=0;};
+    switch(d.step){
+      case 0: if(d.t>0.8){setMotor(true);nx();}break;
+      case 1: if(d.t>2){setDcv(1);nx();}break;
+      case 2: if(S.pos>=1){d.h+=dt;if(d.h>2.4){setDcv(0);nx();}}break;
+      case 3: if(d.t>2.4){setDcv(-1);nx();}break;
+      case 4: if(S.pos<=0){d.h+=dt;if(d.h>0.6){setDcv(0);nx();}}break;
+      case 5: if(d.t>2){setDcv(1);nx();}break;
+      case 6: if(S.pos>=0.35){setDcv(0);nx();}break;
+      case 7: if(d.t>2.2){leak.checked=true;nx();}break;
+      case 8: if(d.t>4){leak.checked=false;setDcv(-1);nx();}break;
+      case 9: if(S.pos<=0){setDcv(0);d.h+=dt;if(d.h>1){setMotor(false);nx();}}break;
+      case 10: if(d.t>1.2)stopDemo();break;
+    }
+  }
+
+  let last=performance.now();
+  function tick(now){
+    const dt=Math.min(0.05,(now-last)/1000);last=now;
+    runDemo(dt);
+    const m=S.motor, d=S.dcv, ctr=center(), lk=leak.checked, rv=cfg.rv;
+    // motion
+    let v=0, mode="idle";
+    if(m&&d===1){ if(S.pos<1){v=0.04+cfg.tb/100*0.36;mode="down";} else mode="press"; }
+    else if(m&&d===-1){ if(S.pos>0){v=-(0.04+cfg.ta/100*0.42);mode="up";} else mode="top"; }
+    else if(d===0&&lk&&S.pos<1){ v=0.045; mode="drift"; }
+    else if(!m&&d!==0&&lk&&S.pos<1){ v=0.045; mode="drift"; }
+    S.pos=Math.max(0,Math.min(1,S.pos+v*dt));
+    // pressures
+    let tP=0,tA=0,tB=0;
+    if(m){
+      if(mode==="down"){tP=18;tA=15;tB=38;}
+      else if(mode==="press"){tP=rv;tA=rv;tB=0;}
+      else if(mode==="up"){tP=Math.min(rv,48);tB=Math.min(rv,46);tA=3;}
+      else if(mode==="top"){tP=rv;tB=rv;tA=0;}
+      else {tP=ctr==="abt"?rv:3;}
+    }
+    if(d===0||!m){ if(!lk&&S.pos<1) tB=Math.max(tB,30); if(lk) tB=Math.max(tB,mode==="drift"?6:0); }
+    const k=Math.min(1,dt*7);
+    S.pP+=(tP-S.pP)*k; S.pA+=(tA-S.pA)*k; S.pB+=(tB-S.pB)*k;
+    const relief=m&&S.pP>rv*0.97;
+
+    // geometry
+    const py=24+S.pos*72;
+    ram.setAttribute("transform",`translate(0,${py.toFixed(2)})`);
+    chA.setAttribute("height",Math.max(0,py-22)); chB.setAttribute("y",py+6); chB.setAttribute("height",Math.max(0,118-(py+6)));
+    chA.setAttribute("class","ch"+(S.pA>8?" p":(S.pA>0.5?" r":"")));
+    chB.setAttribute("class","ch"+(S.pB>8?" p":(mode==="drift"?" r":"")));
+    S.dcvS+=(d-S.dcvS)*Math.min(1,dt*12);
+    spool.setAttribute("transform",`translate(${(S.dcvS*60).toFixed(2)},0)`);
+    needle.setAttribute("transform",`rotate(${(-135+Math.min(350,S.pP)/350*270).toFixed(1)} 44 594)`);
+    rvArrow.setAttribute("transform",relief?"translate(0,4)":"");
+
+    // valves
+    pA.style.transform=(mode==="down"||mode==="up"||lk)?"translateY(-6px)":"";
+    pB.style.transform=(mode==="down"||mode==="up"||lk)?"translateY(-6px)":"";
+    pilB.setAttribute("class","pil"+(mode==="down"||mode==="press"?" on":""));
+    pilA.setAttribute("class","pil"+(mode==="up"||mode==="top"?" on":""));
+    mAb.style.transform=mode==="down"?"translateY(-6px)":"";
+    mBb.style.transform=mode==="up"?"translateY(-6px)":"";
+
+    // pipes
+    const kind=p=>p>8?"p":(p>0.5?"r":"");
+    const kA=kind(S.pA), kB=kind(S.pB);
+    ["A0","A1","A2","Ab"].forEach(i=>setPipe(i,kA,""));
+    ["B0","B1","B2","Bb"].forEach(i=>setPipe(i,kB,""));
+    setPipe("P1",m?"p":"",m?"fwd":""); setPipe("P2",m&&S.pP>8?"p":(m?"r":""),m&&(mode==="down"||mode==="up"||(d===0&&ctr==="open"))?"fwd":"");
+    setPipe("GG",m&&S.pP>8?"p":"","");
+    setPipe("RV",relief?"p":"",relief?"fwd":"");
+    setPipe("SU",m?"r":"",m?"rev":"");
+    const tFlow=mode==="down"||mode==="up"||(m&&d===0&&ctr==="open")||mode==="drift";
+    setPipe("T1",tFlow?"r":"",tFlow?"fwd":"");
+    setPipe("T2",m||tFlow?"r":"",(tFlow||relief)?"fwd":"");
+    if(mode==="down"){ setPipe("A2","p","rev"); setPipe("Ab","p","fwd"); setPipe("A0","p","rev");
+      setPipe("B0",kB,"fwd"); setPipe("B1",kB,"fwd"); setPipe("B2",kB,"fwd"); }
+    if(mode==="up"){ setPipe("B2","p","rev"); setPipe("Bb","p","fwd"); setPipe("B0","p","rev");
+      setPipe("A0","r","fwd"); setPipe("A1","r","fwd"); setPipe("A2","r","fwd"); }
+    if(mode==="drift"){ ["B0","B1","B2"].forEach(i=>setPipe(i,"r","fwd")); setPipe("A0","r","rev"); setPipe("A1","r","rev"); setPipe("A2","r","rev"); }
+
+    // readouts
+    gA.textContent=Math.round(S.pA)+" bar"; gB.textContent=Math.round(S.pB)+" bar";
+    $("mP").textContent=Math.round(S.pP);
+    $("mF").textContent=(mode==="press"?S.pA*0.0801:0).toFixed(1);
+    $("mS").textContent=Math.round(S.pos*100);
+    $("mB").textContent=Math.round(S.pB);
+    $("cSa").classList.toggle("on",d===1); $("cSb").classList.toggle("on",d===-1);
+    $("cPA").classList.toggle("on",mode==="down"||mode==="up"); $("cPB").classList.toggle("on",mode==="down"||mode==="up");
+    $("cRV").classList.toggle("on",relief); $("cDrift").classList.toggle("bad",mode==="drift");
+
+    let s,sub,act=[],warn=false;
+    if(mode==="drift"){s="แรมไหลลงเอง!";sub="pilot check ปิดไม่สนิท น้ำหนักแรมดันน้ำมันฝั่ง B รั่วผ่านช่องกลางลงถัง ถ้าเครื่องจริงแรมค่อย ๆ ลงตอนหยุด ให้ตรวจ MPW-03 และซีลกระบอกสูบ";act=[5];warn=true;}
+    else if(!m){s="มอเตอร์หยุด";sub=S.pos>0?"แรมค้างที่ "+Math.round(S.pos*100)+"% เพราะ pilot check ล็อกน้ำมันฝั่ง B ไว้ (ค้างอยู่ "+Math.round(S.pB)+" bar)":"กด “เปิดมอเตอร์” แล้วสั่ง SOL a ให้แรมลงอัด";act=S.pos>0?[5]:[];}
+    else if(mode==="down"){s="SOL a: แรมกำลังลง";sub="P→A น้ำมันขึ้นหัวกระบอก pilot check B ถูกแรงดัน A ดันเปิด น้ำมันฝั่ง B ไหลผ่านปุ่ม MSW ฝั่ง B ลงถัง (ปุ่มนี้คุมความเร็วลง)";act=[0,1,2];}
+    else if(mode==="press"){s="กำลังอัด "+(S.pA*0.0801).toFixed(1)+" ตัน";sub="แรมแตะแม่พิมพ์ แรงดันขึ้นถึงค่าตั้ง CROSS relief "+rv+" bar น้ำมันส่วนเกินระบายลงถัง หมุน relief ขึ้น = อัดแรงขึ้น";act=[0,3];}
+    else if(mode==="up"){s="SOL b: แรมกำลังขึ้น";sub="P→B น้ำมันเข้าใต้ลูกสูบ pilot check A ถูกแรงดัน B ดันเปิด น้ำมันหัวกระบอกไหลผ่านปุ่ม MSW ฝั่ง A ลงถัง";act=[0,4];}
+    else if(mode==="top"){s="แรมขึ้นสุดแล้ว";sub="ยังจ่ายไฟ SOL b อยู่ ปั๊มระบายผ่าน relief ควรตัดไฟให้วาล์วกลับกลาง";act=[0,4];}
+    else {s="ตำแหน่งกลาง: แรมล็อกอยู่ที่ "+Math.round(S.pos*100)+"%";
+      sub=ctr==="abt"?"pilot check ปิดทั้งคู่ แรมไม่ไหลลง แต่ช่องกลาง P ปิด ปั๊มจึงดันผ่าน relief ที่ "+rv+" bar ตลอดเวลา น้ำมันร้อนและเปลืองไฟ":"pilot check ปิดทั้งคู่ แรมไม่ไหลลง น้ำมันจากปั๊มไหลลงถังที่แรงดันต่ำ ประหยัดพลังงาน";
+      act=ctr==="abt"?[0,5,6]:[0,5]; warn=ctr==="abt";}
+    const st=$("status");st.textContent=s;st.classList.toggle("warn",warn);$("statusSub").textContent=sub;
+    steps.forEach((li,i)=>li.classList.toggle("act",act.includes(i)));
+    requestAnimationFrame(tick);
+  }
+  setCenter("abt");
+  requestAnimationFrame(tick);
+})();
+</script>
+</body></html>

@@ -1,0 +1,356 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}.back{display:inline-block;margin:12px 16px 0;font:600 14px system-ui,sans-serif;color:#2463c9;text-decoration:none}</style></head><body><a class="back" href="index.html">← กลับหน้าเมนู</a>
+<title>จำลองวงจรไฮดรอลิก</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: schematic sheet on the left, control desk on the right; stacks on phones */
+:root{
+  --paper:#eef3f6; --sheet:#fbfdfe; --ink:#1b2833; --muted:#5a6a77; --rule:#cfd9e0;
+  --press:#d2382c; --ret:#2463c9; --idle:#8fa3b3;
+  --press-fill:rgba(210,56,44,.28); --ret-fill:rgba(36,99,201,.22); --idle-fill:rgba(143,163,179,.22);
+  --steel:#dfe6eb; --accent:#e0a21b;
+  --f-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0d151c; --sheet:#131e27; --ink:#e2e9ef; --muted:#93a4b2; --rule:#273643;
+  --press:#ff6b5d; --ret:#62a0ff; --idle:#5d7385;
+  --press-fill:rgba(255,107,93,.30); --ret-fill:rgba(98,160,255,.25); --idle-fill:rgba(93,115,133,.30);
+  --steel:#2a3a47; --accent:#f2b739; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0d151c; --sheet:#131e27; --ink:#e2e9ef; --muted:#93a4b2; --rule:#273643;
+  --press:#ff6b5d; --ret:#62a0ff; --idle:#5d7385;
+  --press-fill:rgba(255,107,93,.30); --ret-fill:rgba(98,160,255,.25); --idle-fill:rgba(93,115,133,.30);
+  --steel:#2a3a47; --accent:#f2b739; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+header{display:flex;flex-direction:column;gap:2px;margin-bottom:16px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--f-display);font-size:clamp(24px,4vw,34px);line-height:1.2;margin:0;text-wrap:balance}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:880px){.grid{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}}
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:8px;min-width:0}
+svg{display:block;width:100%;height:auto;max-height:78vh}
+.panel{display:flex;flex-direction:column;gap:14px;min-width:0}
+.box{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.status{font-family:var(--f-display);font-size:19px;line-height:1.35;margin:0 0 4px}
+.sub{color:var(--muted);margin:0;font-size:14px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:600 15px var(--f-body);color:var(--ink);background:var(--steel);border:1px solid var(--rule);border-radius:8px;padding:12px 10px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#motorBtn[aria-pressed="true"]{background:var(--press);color:#fff;border-color:transparent}
+#leverBtn.on{background:var(--accent);color:#1b1b1b;border-color:transparent}
+#demoBtn{grid-column:1/-1;background:transparent}
+#demoBtn.on{border-color:var(--accent);color:var(--accent)}
+.lock{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);grid-column:1/-1}
+.lock input{width:18px;height:18px;accent-color:var(--accent)}
+.meters{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.meter .k{font-size:12px;color:var(--muted);letter-spacing:.03em}
+.meter .v{font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums}
+.meter .v small{font-size:12px;color:var(--muted);margin-left:2px}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--idle-fill);color:var(--muted)}
+.chip.open{background:var(--press);color:#fff}
+ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:s}
+ol li{counter-increment:s;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;font-size:14px;color:var(--muted);padding:6px 8px;border-radius:8px;transition:background .25s,color .25s}
+ol li::before{content:counter(s);font:600 13px var(--f-mono);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--rule)}
+ol li.act{color:var(--ink);background:var(--idle-fill)}
+ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:22px;height:4px;border-radius:2px;display:inline-block}
+.note{font-size:13px;color:var(--muted);margin:0}
+
+/* schematic */
+.ink{stroke:var(--ink);fill:none;stroke-width:1.6}
+.inkf{fill:var(--ink)}
+.lbl{font-family:var(--f-body);font-size:10.5px;fill:var(--muted)}
+.port{font-family:var(--f-mono);font-size:10px;fill:var(--ink);font-weight:500}
+.pipe{fill:none;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+.pipe.idle{stroke:var(--idle)} .pipe.p{stroke:var(--press)} .pipe.r{stroke:var(--ret)}
+.flow{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sheet);stroke-dasharray:3 11;opacity:0}
+.flow.fwd,.flow.rev{opacity:.95;animation:dash .55s linear infinite}
+.flow.rev{animation-direction:reverse}
+@keyframes dash{to{stroke-dashoffset:-14}}
+.ch{transition:fill .3s}
+.ch.idle{fill:var(--idle-fill)} .ch.p{fill:var(--press-fill)} .ch.r{fill:var(--ret-fill)}
+#spool{transition:transform .35s cubic-bezier(.3,.7,.3,1)}
+#reliefArrow{transition:transform .25s}
+.spin{transform-origin:95px 430px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.oil{fill:var(--ret-fill)}
+#lever{cursor:pointer}
+@media (prefers-reduced-motion:reduce){.flow.fwd,.flow.rev{animation:none;stroke-dasharray:none;opacity:.35}.spin{animation:none}#spool,#reliefArrow{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Simple hydraulic circuit · 4/2 DCV spring return</span>
+    <h1>จำลองวงจรไฮดรอลิกพื้นฐาน</h1>
+  </header>
+
+  <div class="grid">
+    <div class="sheet">
+      <svg id="sch" viewBox="0 0 400 560" role="img" aria-label="แผนผังวงจรไฮดรอลิกแบบเคลื่อนไหว">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10z" class="inkf"/>
+          </marker>
+        </defs>
+
+        <!-- cylinder -->
+        <text x="150" y="26" text-anchor="middle" class="lbl">กระบอกสูบสองทาง (Double-acting cylinder)</text>
+        <circle cx="28" cy="65" r="7" class="ink"/>
+        <line x1="35" y1="65" x2="40" y2="65" class="ink"/>
+        <rect id="cA" class="ch idle" x="42" y="42" width="10" height="46"/>
+        <rect id="cB" class="ch idle" x="58" y="42" width="200" height="46"/>
+        <g id="mover">
+          <rect x="0" y="42" width="10" height="46" class="inkf"/>
+          <rect x="10" y="59" width="130" height="12" fill="var(--steel)" stroke="var(--ink)" stroke-width="1.4"/>
+          <circle cx="146" cy="65" r="6" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1.6"/>
+        </g>
+        <rect x="40" y="40" width="220" height="50" class="ink" stroke-width="2"/>
+        <text x="70" y="108" text-anchor="middle" class="port">A</text>
+        <text x="230" y="108" text-anchor="middle" class="port">B</text>
+
+        <!-- pipes injected here -->
+        <g id="pipes"></g>
+
+        <!-- DCV -->
+        <g id="spool">
+          <rect x="100" y="230" width="60" height="50" fill="var(--sheet)" class="ink"/>
+          <rect x="160" y="230" width="60" height="50" fill="var(--sheet)" class="ink"/>
+          <line x1="115" y1="276" x2="115" y2="234" class="ink" marker-end="url(#ah)"/>
+          <line x1="145" y1="234" x2="145" y2="276" class="ink" marker-end="url(#ah)"/>
+          <line x1="175" y1="276" x2="205" y2="234" class="ink" marker-end="url(#ah)"/>
+          <line x1="175" y1="234" x2="205" y2="276" class="ink" marker-end="url(#ah)"/>
+          <g id="lever">
+            <rect x="60" y="238" width="44" height="34" fill="transparent"/>
+            <line x1="100" y1="255" x2="82" y2="255" class="ink" stroke-width="2"/>
+            <line x1="82" y1="255" x2="74" y2="243" class="ink" stroke-width="2"/>
+            <circle cx="72" cy="240" r="4.5" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.2"/>
+          </g>
+        </g>
+        <polyline id="spring" class="ink" points=""/>
+        <line x1="300" y1="240" x2="300" y2="270" class="ink" stroke-width="2"/>
+        <text x="308" y="250" class="lbl">วาล์ว DCV</text>
+        <text x="308" y="263" class="lbl">4/2 สปริงคืน</text>
+        <text x="171" y="226" text-anchor="end" class="port">A</text>
+        <text x="209" y="226" class="port">B</text>
+        <text x="171" y="295" text-anchor="end" class="port">P</text>
+        <text x="209" y="295" class="port">T</text>
+        <text x="72" y="228" text-anchor="middle" class="lbl">คันโยก</text>
+
+        <!-- gauge -->
+        <circle cx="232" cy="350" r="16" fill="var(--sheet)" class="ink"/>
+        <line id="needle" x1="232" y1="350" x2="232" y2="338" stroke="var(--press)" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="232" cy="350" r="2" class="inkf"/>
+        <text x="252" y="346" class="lbl">เกจ</text>
+        <text id="gaugeTxt" x="252" y="359" class="port">0 bar</text>
+
+        <!-- relief valve -->
+        <line x1="240" y1="380" x2="240" y2="420" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <line x1="240" y1="420" x2="250" y2="420" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <rect x="250" y="400" width="40" height="40" fill="var(--sheet)" class="ink"/>
+        <g id="reliefArrow"><line x1="258" y1="436" x2="258" y2="404" class="ink" transform="rotate(180 258 420)" marker-end="url(#ah)"/></g>
+        <polyline class="ink" points="290,420 294,412 298,428 302,412 306,428 310,420"/>
+        <text x="262" y="458" text-anchor="end" class="lbl">วาล์วระบายแรงดัน</text>
+        <text x="262" y="471" text-anchor="end" class="lbl">ตั้งไว้ 140 bar</text>
+
+        <!-- motor + pump -->
+        <circle cx="35" cy="430" r="15" fill="var(--sheet)" class="ink"/>
+        <text x="35" y="434" text-anchor="middle" class="port">M</text>
+        <line x1="50" y1="428" x2="73" y2="428" class="ink"/>
+        <line x1="50" y1="432" x2="73" y2="432" class="ink"/>
+        <circle id="pumpRing" cx="95" cy="430" r="27" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="4 6"/>
+        <circle cx="95" cy="430" r="22" fill="var(--sheet)" class="ink"/>
+        <path d="M95 410 L86 425 L104 425z" class="inkf"/>
+        <text x="35" y="460" text-anchor="middle" class="lbl">มอเตอร์</text>
+        <text x="128" y="436" class="lbl">ปั๊ม</text>
+
+        <!-- filters -->
+        <g class="ink"><path d="M95 466 L107 478 L95 490 L83 478z" fill="var(--sheet)"/><line x1="85" y1="478" x2="105" y2="478" stroke-dasharray="3 2"/></g>
+        <g class="ink"><path d="M340 448 L352 460 L340 472 L328 460z" fill="var(--sheet)"/><line x1="330" y1="460" x2="350" y2="460" stroke-dasharray="3 2"/></g>
+        <text x="112" y="482" class="lbl">กรองดูด</text>
+        <text x="356" y="464" class="lbl">กรอง</text>
+        <text x="356" y="476" class="lbl">กลับ</text>
+
+        <!-- tank -->
+        <rect x="32" y="510" width="346" height="23" class="oil"/>
+        <path d="M30 498 V535 H380 V498" class="ink" stroke-width="2"/>
+        <text x="205" y="552" text-anchor="middle" class="lbl">ถังน้ำมัน (Tank)</text>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <div class="box" aria-live="polite">
+        <p class="status" id="status">ระบบหยุด</p>
+        <p class="sub" id="statusSub">กด “เปิดมอเตอร์” เพื่อเริ่มจ่ายน้ำมัน</p>
+      </div>
+
+      <div class="box controls">
+        <button id="motorBtn" aria-pressed="false">เปิดมอเตอร์</button>
+        <button id="leverBtn" aria-label="กดค้างเพื่อโยกคันโยก DCV">กดค้าง = โยกคันโยก</button>
+        <label class="lock"><input type="checkbox" id="lockChk"> ค้างคันโยกไว้ (ไม่ต้องกดค้าง)</label>
+        <button id="demoBtn">▶ สาธิตอัตโนมัติ ครบรอบ</button>
+      </div>
+
+      <div class="box meters">
+        <div class="meter"><div class="k">แรงดันระบบ</div><div class="v"><span id="mP">0</span><small>bar</small></div></div>
+        <div class="meter"><div class="k">ระยะชักลูกสูบ</div><div class="v"><span id="mS">0</span><small>%</small></div></div>
+        <div class="meter"><div class="k">วาล์วระบาย</div><div class="v" style="font-size:15px;padding-top:6px"><span id="mR" class="chip">ปิด</span></div></div>
+      </div>
+
+      <div class="box">
+        <ol id="steps">
+          <li>มอเตอร์ขับปั๊ม ดูดน้ำมันจากถังผ่านไส้กรอง</li>
+          <li>ปั๊มส่งน้ำมันแรงดันเข้าพอร์ต P ของวาล์ว DCV</li>
+          <li>โยกคันโยก: P ต่อ A และ B ต่อ T กระบอกสูบยืดออก</li>
+          <li>ปล่อยคันโยก สปริงดันกลับ: P ต่อ B และ A ต่อ T กระบอกสูบหดกลับ</li>
+          <li>ลูกสูบสุดช่วงชัก แรงดันขึ้นถึงค่าตั้ง วาล์วระบายเปิด น้ำมันกลับถัง</li>
+          <li>น้ำมันไหลกลับถังผ่านไส้กรองไหลกลับ</li>
+        </ol>
+      </div>
+
+      <div class="legend">
+        <span><i style="background:var(--press)"></i>สายแรงดัน</span>
+        <span><i style="background:var(--ret)"></i>สายไหลกลับ / ดูด</span>
+        <span><i style="background:var(--idle)"></i>ไม่มีแรงดัน</span>
+      </div>
+      <p class="note">สังเกต: จังหวะหดกลับเร็วกว่ายืดออก เพราะด้านก้านสูบมีพื้นที่น้อยกว่า ใช้น้ำมันน้อยกว่าในปริมาณการไหลเท่ากัน และวงจรนี้ไม่มีตำแหน่งกลาง ปั๊มจึงจ่ายผ่านวาล์วระบายทุกครั้งที่ลูกสูบสุดช่วงชัก</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const NS="http://www.w3.org/2000/svg";
+  const pipeDefs={
+    A:"M70 96 V160 H175 V222", B:"M230 96 V185 H205 V222",
+    P1:"M95 408 V380 H175", P2:"M175 380 V288",
+    R1:"M175 380 H270 V400", R2:"M270 440 V520",
+    T:"M205 288 V310 H340 V520", S:"M95 520 V452", G:"M175 350 H216"
+  };
+  const g=document.getElementById("pipes"), pipes={};
+  for(const k in pipeDefs){
+    const base=document.createElementNS(NS,"path"); base.setAttribute("d",pipeDefs[k]); base.setAttribute("class","pipe idle");
+    const fl=document.createElementNS(NS,"path"); fl.setAttribute("d",pipeDefs[k]); fl.setAttribute("class","flow");
+    g.appendChild(base); g.appendChild(fl); pipes[k]={base,fl,key:""};
+  }
+  const $=id=>document.getElementById(id);
+  const mover=$("mover"), cA=$("cA"), cB=$("cB"), spool=$("spool"), spring=$("spring"),
+        needle=$("needle"), relief=$("reliefArrow"), ring=$("pumpRing");
+  const motorBtn=$("motorBtn"), leverBtn=$("leverBtn"), lockChk=$("lockChk"), demoBtn=$("demoBtn");
+  const steps=[...document.querySelectorAll("#steps li")];
+
+  const st={on:false,shift:false,pos:0,p:0,relief:false,moving:false};
+  let demo=null;
+
+  function setPipe(k,kind,flow){
+    const p=pipes[k], key=kind+flow; if(p.key===key) return; p.key=key;
+    p.base.setAttribute("class","pipe "+kind);
+    p.fl.setAttribute("class","flow"+(flow?" "+flow:""));
+  }
+  function drawSpring(shift){
+    const x0=220+(shift?60:0), x1=300, n=8, pts=[[x0,255]];
+    for(let i=1;i<n;i++) pts.push([x0+(x1-x0)*i/n, i%2?245:265]);
+    pts.push([x1,255]); spring.setAttribute("points",pts.map(p=>p.join(",")).join(" "));
+  }
+  function setShift(v){
+    if(st.shift===v) return; st.shift=v;
+    spool.style.transform=v?"translateX(60px)":"";
+    leverBtn.classList.toggle("on",v); drawSpring(v);
+  }
+  function setMotor(v){
+    st.on=v; motorBtn.setAttribute("aria-pressed",v);
+    motorBtn.textContent=v?"ปิดมอเตอร์":"เปิดมอเตอร์";
+    ring.classList.toggle("spin",v);
+  }
+  function stopDemo(){ if(demo){demo=null; demoBtn.classList.remove("on"); demoBtn.textContent="▶ สาธิตอัตโนมัติ ครบรอบ";} }
+
+  motorBtn.addEventListener("click",()=>{stopDemo(); setMotor(!st.on);});
+  const press=e=>{e.preventDefault(); stopDemo(); if(lockChk.checked) setShift(!st.shift); else setShift(true);};
+  const release=()=>{ if(!lockChk.checked && !demo) setShift(false); };
+  for(const el of [leverBtn,$("lever")]){
+    el.addEventListener("pointerdown",press);
+    el.addEventListener("pointerup",release);
+    el.addEventListener("pointerleave",release);
+    el.addEventListener("pointercancel",release);
+  }
+  leverBtn.addEventListener("keydown",e=>{ if((e.key===" "||e.key==="Enter")&&!e.repeat) press(e); });
+  leverBtn.addEventListener("keyup",e=>{ if(e.key===" "||e.key==="Enter") release(); });
+  lockChk.addEventListener("change",()=>{ leverBtn.textContent=lockChk.checked?"แตะ = สลับคันโยก":"กดค้าง = โยกคันโยก"; if(!lockChk.checked) setShift(false); });
+  demoBtn.addEventListener("click",()=>{
+    if(demo){stopDemo(); return;}
+    setMotor(false); setShift(false);
+    demo={step:0,t:0}; demoBtn.classList.add("on"); demoBtn.textContent="■ หยุดการสาธิต";
+  });
+
+  function runDemo(dt){
+    if(!demo) return; demo.t+=dt;
+    switch(demo.step){
+      case 0: if(demo.t>0.6){setMotor(true); demo.step=1; demo.t=0;} break;
+      case 1: if(demo.t>2){setShift(true); demo.step=2; demo.t=0;} break;
+      case 2: if(st.pos>=1){ if(!demo.h) demo.h=demo.t; if(demo.t-demo.h>2.5){setShift(false); demo.step=3; demo.t=0; demo.h=0;} } break;
+      case 3: if(st.pos<=0){ if(!demo.h) demo.h=demo.t; if(demo.t-demo.h>2.5){setMotor(false); demo.step=4; demo.t=0;} } break;
+      case 4: if(demo.t>1.5) stopDemo(); break;
+    }
+  }
+
+  let last=performance.now();
+  function tick(now){
+    const dt=Math.min(0.05,(now-last)/1000); last=now;
+    runDemo(dt);
+    const dir=st.shift?1:-1;
+    st.moving = st.on && ((dir>0&&st.pos<1)||(dir<0&&st.pos>0));
+    if(st.moving){ st.pos=Math.max(0,Math.min(1,st.pos+dir*(dir>0?0.22:0.34)*dt)); }
+    const target=!st.on?0:(st.moving?(st.shift?45:30):140);
+    st.p+=(target-st.p)*Math.min(1,dt*(target>st.p?3:5));
+    st.relief = st.on && !st.moving && st.p>125;
+
+    // geometry
+    const px=48+st.pos*192;
+    mover.setAttribute("transform","translate("+px+",0)");
+    cA.setAttribute("width",Math.max(0,px-42));
+    cB.setAttribute("x",px+10); cB.setAttribute("width",Math.max(0,258-(px+10)));
+    needle.setAttribute("transform","rotate("+(-120+Math.min(160,st.p)/160*240)+" 232 350)");
+    relief.style.transform=st.relief?"translateX(12px)":"";
+
+    // flows
+    const on=st.on, mv=st.moving, sh=st.shift;
+    const I="idle";
+    setPipe("S", on?"r":I, on?"fwd":"");
+    setPipe("P1",on?"p":I, on?"fwd":"");
+    setPipe("G", on?"p":I, "");
+    setPipe("P2",on?"p":I, on&&mv?"fwd":"");
+    setPipe("R1",on?"p":I, st.relief?"fwd":"");
+    setPipe("R2",on?"r":I, st.relief?"fwd":"");
+    setPipe("T", on?"r":I, on&&mv?"fwd":"");
+    setPipe("A", on?(sh?"p":"r"):I, on&&mv?(sh?"rev":"fwd"):"");
+    setPipe("B", on?(sh?"r":"p"):I, on&&mv?(sh?"fwd":"rev"):"");
+    cA.setAttribute("class","ch "+(on?(sh?"p":"r"):I));
+    cB.setAttribute("class","ch "+(on?(sh?"r":"p"):I));
+
+    // readouts
+    const P=Math.round(st.p);
+    $("mP").textContent=P; $("gaugeTxt").textContent=P+" bar";
+    $("mS").textContent=Math.round(st.pos*100);
+    const mR=$("mR"); mR.textContent=st.relief?"เปิด":"ปิด"; mR.classList.toggle("open",st.relief);
+
+    let s,sub,act=[];
+    if(!on){ s="ระบบหยุด"; sub=st.p>2?"แรงดันกำลังลดลง น้ำมันค้างในระบบไม่มีแรงดัน":"กด “เปิดมอเตอร์” เพื่อเริ่มจ่ายน้ำมัน"; }
+    else if(mv&&sh){ s="กระบอกสูบกำลังยืดออก"; sub="น้ำมันแรงดันเข้าด้าน A ดันลูกสูบ น้ำมันด้าน B ไหลออกทาง T กลับถัง"; act=[0,1,2,5]; }
+    else if(mv){ s="กระบอกสูบกำลังหดกลับ"; sub="สปริงดันวาล์วกลับ น้ำมันแรงดันเข้าด้าน B น้ำมันด้าน A ไหลกลับถัง"; act=[0,1,3,5]; }
+    else { s=sh?"ยืดสุดช่วงชักแล้ว":"หดสุดช่วงชักแล้ว"; sub="ลูกสูบไปต่อไม่ได้ แรงดันขึ้นถึงค่าตั้ง วาล์วระบายเปิดให้น้ำมันจากปั๊มไหลกลับถัง"; act=[0,1,4,5]; }
+    $("status").textContent=s; $("statusSub").textContent=sub;
+    steps.forEach((li,i)=>li.classList.toggle("act",act.includes(i)));
+
+    requestAnimationFrame(tick);
+  }
+  drawSpring(false);
+  requestAnimationFrame(tick);
+})();
+</script>
+</body></html>

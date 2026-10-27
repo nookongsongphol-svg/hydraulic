@@ -1,0 +1,426 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}.back{display:inline-block;margin:12px 16px 0;font:600 14px system-ui,sans-serif;color:#2463c9;text-decoration:none}</style></head><body><a class="back" href="index.html">← กลับหน้าเมนู</a>
+<title>วงจรนิวแมติก 1A1 Interlock</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: schematic sheet left, control desk right; stacks on phones */
+:root{
+  --paper:#eef3f6; --sheet:#fbfdfe; --ink:#1b2833; --muted:#5a6a77; --rule:#cfd9e0;
+  --air:#1d4fa8; --dead:#9cc7d8; --air-fill:rgba(29,79,168,.25); --dead-fill:rgba(156,199,216,.18);
+  --steel:#dfe6eb; --accent:#e0a21b; --ok:#1f8a5b; --warn:#c2410c;
+  --f-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0d151c; --sheet:#131e27; --ink:#e2e9ef; --muted:#93a4b2; --rule:#273643;
+  --air:#5b9cff; --dead:#35556a; --air-fill:rgba(91,156,255,.28); --dead-fill:rgba(53,85,106,.25);
+  --steel:#2a3a47; --accent:#f2b739; --ok:#3fc386; --warn:#fb923c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0d151c; --sheet:#131e27; --ink:#e2e9ef; --muted:#93a4b2; --rule:#273643;
+  --air:#5b9cff; --dead:#35556a; --air-fill:rgba(91,156,255,.28); --dead-fill:rgba(53,85,106,.25);
+  --steel:#2a3a47; --accent:#f2b739; --ok:#3fc386; --warn:#fb923c; color-scheme:dark}
+html{background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+header{display:flex;flex-direction:column;gap:2px;margin-bottom:16px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--f-display);font-size:clamp(24px,4vw,34px);line-height:1.2;margin:0;text-wrap:balance}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:880px){.grid{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:8px;min-width:0}
+svg{display:block;width:100%;height:auto;max-height:86vh}
+.panel{display:flex;flex-direction:column;gap:14px;min-width:0}
+.box{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.status{font-family:var(--f-display);font-size:19px;line-height:1.35;margin:0 0 4px}
+.status.warn{color:var(--warn)}
+.sub{color:var(--muted);margin:0;font-size:14px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:600 15px var(--f-body);color:var(--ink);background:var(--steel);border:1px solid var(--rule);border-radius:8px;padding:11px 8px;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none}
+button small{display:block;font-weight:400;font-size:12px;opacity:.8}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#supplyBtn,#demoBtn{grid-column:1/-1}
+#supplyBtn[aria-pressed="true"]{background:var(--air);color:#fff;border-color:transparent}
+.hold.on{background:var(--accent);color:#1b1b1b;border-color:transparent}
+#demoBtn{background:transparent}
+#demoBtn.on{border-color:var(--accent);color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--dead-fill);color:var(--muted);border:1px solid var(--rule)}
+.chip.on{background:var(--ok);color:#fff;border-color:transparent}
+.meters{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.meter .k{font-size:12px;color:var(--muted)}
+.meter .v{font-family:var(--f-mono);font-size:21px;font-variant-numeric:tabular-nums}
+.meter .v small{font-size:12px;color:var(--muted);margin-left:2px}
+.sliders{display:grid;gap:10px}
+.sl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;font-size:14px}
+.sl input{grid-column:1/-1;width:100%;accent-color:var(--air)}
+.sl output{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums}
+.sl span{min-width:0}
+ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:s}
+ol li{counter-increment:s;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;font-size:14px;color:var(--muted);padding:6px 8px;border-radius:8px;transition:background .25s,color .25s}
+ol li::before{content:counter(s);font:600 13px var(--f-mono);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--rule)}
+ol li.act{color:var(--ink);background:var(--dead-fill)}
+ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:22px;height:4px;border-radius:2px;display:inline-block}
+
+.ink{stroke:var(--ink);fill:none;stroke-width:1.4}
+.inkf{fill:var(--ink)}
+.bx{fill:var(--sheet);stroke:var(--ink);stroke-width:1.4}
+.lbl{font-family:var(--f-body);font-size:10px;fill:var(--muted)}
+.tag{font-family:var(--f-mono);font-size:9.5px;fill:var(--ink);font-weight:500}
+.num{font-family:var(--f-mono);font-size:8.5px;fill:var(--muted)}
+.val{font-family:var(--f-mono);font-size:9.5px;fill:var(--air);font-weight:500}
+.pipe{fill:none;stroke-linecap:round;stroke-linejoin:round;transition:stroke .25s;stroke:var(--dead)}
+.pipe.main{stroke-width:4.5} .pipe.sig{stroke-width:2.6}
+.pipe.on{stroke:var(--air)}
+.flow{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke:var(--sheet);stroke-dasharray:3 10;opacity:0}
+.flow.fwd,.flow.rev{opacity:.95;animation:dash .5s linear infinite}
+.flow.rev{animation-direction:reverse}
+@keyframes dash{to{stroke-dashoffset:-13}}
+.ch{transition:fill .25s;fill:var(--dead-fill)} .ch.on{fill:var(--air-fill)}
+.puff{fill:none;stroke:var(--air);stroke-width:1.4;opacity:0}
+.puff.go{animation:puff .6s ease-out infinite}
+@keyframes puff{0%{opacity:.9;transform:translateY(0) scale(.6)}100%{opacity:0;transform:translateY(12px) scale(1.4)}}
+.sensor{fill:var(--sheet);stroke:var(--ink);stroke-width:1.2;transition:fill .2s}
+.sensor.on{fill:var(--ok)}
+@media (prefers-reduced-motion:reduce){.flow.fwd,.flow.rev{animation:none;stroke-dasharray:none;opacity:.35}.puff.go{animation:none;opacity:.6}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Pneumatic circuit · 1A1 with 1B1 interlock, AND logic &amp; 5/2 impulse valve</span>
+    <h1>วงจรนิวแมติก ยืดได้เมื่อหดสุดเท่านั้น</h1>
+  </header>
+
+  <div class="grid">
+    <div class="sheet">
+      <svg id="sch" viewBox="0 0 420 640" role="img" aria-label="แผนผังวงจรนิวแมติกแบบเคลื่อนไหว">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10z" class="inkf"/>
+          </marker>
+        </defs>
+        <g id="pipes"></g>
+        <g id="parts"></g>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <div class="box" aria-live="polite">
+        <p class="status" id="status">ลมหลักปิดอยู่</p>
+        <p class="sub" id="statusSub">กด “เปิดลมหลัก” เพื่อเริ่ม</p>
+      </div>
+
+      <div class="box controls">
+        <button id="supplyBtn" aria-pressed="false">เปิดลมหลัก (0Z)</button>
+        <button id="s1Btn" class="hold">1S1<small>กดค้าง = ยืดออก</small></button>
+        <button id="s2Btn" class="hold">1S2<small>กดค้าง = หดกลับ</small></button>
+        <button id="demoBtn">▶ สาธิตอัตโนมัติ ครบรอบ</button>
+      </div>
+
+      <div class="box chips" aria-label="สถานะสัญญาณ">
+        <span class="chip" id="c1V2">1V2 จ่ายลมสัญญาณ</span>
+        <span class="chip" id="c1B1">1B1 เจอลูกสูบ</span>
+        <span class="chip" id="c1V3">1V3 AND ส่งสัญญาณ</span>
+        <span class="chip" id="c1V4">1V4 = ตำแหน่ง 12</span>
+      </div>
+
+      <div class="box meters">
+        <div class="meter"><div class="k">แรงดันเข้าหัวสูบ (1V6)</div><div class="v"><span id="mP">0.00</span><small>bar</small></div></div>
+        <div class="meter"><div class="k">ระยะชัก 1A1</div><div class="v"><span id="mS">0</span><small>%</small></div></div>
+        <div class="meter"><div class="k">แรงยืด Ø32 mm</div><div class="v"><span id="mF">0</span><small>N</small></div></div>
+      </div>
+
+      <div class="box sliders">
+        <label class="sl" for="r1V1"><span>1V1 ปรับแรงดันสัญญาณควบคุม 1V2 (1V2 เปิดที่ ≥ 4.0 bar)</span><output id="o1V1">5.50 bar</output><input type="range" id="r1V1" min="0" max="6" step="0.25" value="5.5"></label>
+        <label class="sl" for="r1V6"><span>1V6 ปรับแรงดันเข้าหัวสูบ = แรงยืด</span><output id="o1V6">4.00 bar</output><input type="range" id="r1V6" min="1" max="6" step="0.25" value="4"></label>
+        <label class="sl" for="r1V7"><span>1V7 ปรับความเร็วยืด (คุมลมออกด้านก้านสูบ)</span><output id="o1V7">50 %</output><input type="range" id="r1V7" min="10" max="100" step="5" value="50"></label>
+        <label class="sl" for="r1V5"><span>1V5 ปรับความเร็วหด (คุมลมออกด้านหัวสูบ)</span><output id="o1V5">70 %</output><input type="range" id="r1V5" min="10" max="100" step="5" value="70"></label>
+      </div>
+
+      <div class="box">
+        <ol id="steps">
+          <li>เปิดลมหลัก ลมเข้า 1V4 พอร์ต 1 และผ่าน 1V1 ไปสั่งวาล์วลำดับแรงดัน 1V2</li>
+          <li>แรงดันจาก 1V1 ถึง 4 bar 1V2 จึงเปิด จ่ายลมสัญญาณให้ 1B1, 1S1, 1S2</li>
+          <li>ลูกสูบหดสุด เซนเซอร์ 1B1 ตรวจจับได้ ส่งลมไปรอที่ 1V3</li>
+          <li>กด 1S1 พร้อม 1B1 ทำงาน 1V3 (AND) ส่งสัญญาณเข้า 14 1V4 สลับ กระบอกสูบยืดออก</li>
+          <li>1V4 เป็นวาล์ว impulse จำตำแหน่งไว้ ปล่อยปุ่มแล้วยังยืดต่อจนสุด</li>
+          <li>กด 1S2 สัญญาณเข้า 12 1V4 สลับกลับ กระบอกสูบหดกลับ</li>
+          <li>กด 1S1 ระหว่างที่ลูกสูบยังไม่หดสุด 1B1 ไม่ทำงาน AND จึงไม่ปล่อยสัญญาณ (Interlock)</li>
+        </ol>
+      </div>
+
+      <div class="legend">
+        <span><i style="background:var(--air)"></i>มีแรงดันลม</span>
+        <span><i style="background:var(--dead)"></i>ไม่มีแรงดัน / ระบายแล้ว</span>
+        <span><i style="background:var(--air);height:2px"></i>เส้นสัญญาณ</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const NS="http://www.w3.org/2000/svg";
+  const $=id=>document.getElementById(id);
+  const parts=$("parts"), pipeG=$("pipes");
+  function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||parts).appendChild(e);return e;}
+  function txt(x,y,s,cls,anchor){const t=el("text",{x,y,class:cls,"text-anchor":anchor||"start"});t.textContent=s;return t;}
+  function zig(x0,x1,y,h){const n=6,p=[[x0,y]];for(let i=1;i<n;i++)p.push([x0+(x1-x0)*i/n,i%2?y-h:y+h]);p.push([x1,y]);return p.map(q=>q.map(v=>v.toFixed(1)).join(",")).join(" ");}
+
+  // ---------- pipes ----------
+  const P={};
+  function pipe(id,d,kind){
+    const b=el("path",{d,class:"pipe "+kind},pipeG), f=el("path",{d,class:"flow"},pipeG);
+    P[id]={b,f,kind,k:""};
+  }
+  pipe("M0","M160 622 V600 H370 V280 H240 V240","main");
+  pipe("M1","M240 600 V484","main");
+  pipe("M2","M160 600 V575","main");
+  pipe("PV1","M160 545 V467 H185","sig");
+  pipe("S0","M240 450 V400","sig");
+  pipe("S1","M60 379 V400 H330 V379","sig");
+  pipe("S2","M185 400 V379","sig");
+  pipe("B1","M60 345 V320 H110","sig");
+  pipe("X1","M185 345 V320 H170","sig");
+  pipe("X14","M140 310 V215 H150","sig");
+  pipe("X12","M330 345 V215","sig");
+  pipe("C1","M227 190 V145","main");
+  pipe("C2","M227 115 V95 H210 V70","main");
+  pipe("C3","M227 95 H160 V115","main");
+  pipe("C4","M160 145 V165 H227","main");
+  pipe("R1","M253 190 V170 H300 V145","main");
+  pipe("R2","M300 115 V85 H285 V70","main");
+  function setPipe(id,on,flow){const p=P[id],key=on+flow;if(p.k===key)return;p.k=key;
+    p.b.setAttribute("class","pipe "+p.kind+(on?" on":""));p.f.setAttribute("class","flow"+(flow?" "+flow:""));}
+
+  // ---------- cylinder 1A1 ----------
+  const chCap=el("rect",{x:192,y:42,width:4,height:26,class:"ch"});
+  const chRod=el("rect",{x:200,y:42,width:98,height:26,class:"ch"});
+  const mover=el("g",{});
+  el("rect",{x:0,y:42,width:6,height:26,class:"inkf"},mover);
+  el("rect",{x:6,y:52,width:104,height:6,fill:"var(--steel)",stroke:"var(--ink)","stroke-width":1.2},mover);
+  el("rect",{x:110,y:49,width:6,height:12,class:"inkf"},mover);
+  el("rect",{x:190,y:40,width:110,height:30,class:"ink","stroke-width":2});
+  const sens=el("rect",{x:194,y:24,width:20,height:10,rx:2,class:"sensor"});
+  el("line",{x1:204,y1:34,x2:204,y2:40,class:"ink"});
+  txt(204,19,"1B1","tag","middle");
+  txt(310,34,"1A1","tag"); txt(310,90,"Ø32 mm","num");
+  txt(212,82,"cap","num"); txt(287,82,"rod","num");
+
+  // ---------- regulator (pressure control valve) & one-way flow control ----------
+  function regulator(x,yT,label,gaugeId){
+    el("rect",{x:x-12,y:yT,width:24,height:30,class:"bx"});
+    el("line",{x1:x-4,y1:yT+26,x2:x-4,y2:yT+4,class:"ink","marker-end":"url(#ah)"});
+    el("polyline",{points:zig(x+12,x+26,yT+15,5),class:"ink"});
+    el("path",{d:`M${x} ${yT+30} V${yT+34} M${x} ${yT+4} H${x+8} V${yT+8}`,class:"ink","stroke-dasharray":"2 2"});
+    el("circle",{cx:x-24,cy:yT+15,r:7,class:"bx"});
+    el("line",{x1:x-24,y1:yT+15,x2:x-20,y2:yT+10,class:"ink"});
+    el("line",{x1:x-17,y1:yT+15,x2:x-12,y2:yT+15,class:"ink"});
+    txt(x-34,yT+4,label,"tag","end");
+    return txt(x-34,yT+27,"0.00","val","end");
+  }
+  function flowCtl(x,yT,label,side){
+    el("rect",{x:x-11,y:yT,width:22,height:30,class:"bx"});
+    el("path",{d:`M${x-5} ${yT+6} Q${x} ${yT+15} ${x-5} ${yT+24} M${x+5} ${yT+6} Q${x} ${yT+15} ${x+5} ${yT+24}`,class:"ink"});
+    el("line",{x1:x-8,y1:yT+24,x2:x+8,y2:yT+6,class:"ink","marker-end":"url(#ah)"});
+    side==="l"?txt(x-15,yT+18,label,"tag","end"):txt(x+15,yT+18,label,"tag");
+  }
+  const g1V6=regulator(227,115,"1V6");
+  flowCtl(160,115,"1V5","l");
+  flowCtl(300,115,"1V7","r");
+  const g1V1=regulator(160,545,"1V1");
+
+  // ---------- 5/2 impulse valve 1V4 ----------
+  el("rect",{x:165,y:186,width:150,height:58,fill:"none",stroke:"var(--rule)","stroke-dasharray":"3 3"});
+  const v4=el("g",{});
+  el("rect",{x:165,y:190,width:50,height:50,class:"bx"},v4);
+  el("rect",{x:215,y:190,width:50,height:50,class:"bx"},v4);
+  // left box (state 14): 1->4, 2->3 (drawn 50px left of ports)
+  el("line",{x1:190,y1:236,x2:177,y2:194,class:"ink","marker-end":"url(#ah)"},v4);
+  el("line",{x1:203,y1:194,x2:208,y2:236,class:"ink","marker-end":"url(#ah)"},v4);
+  // right box (state 12): 1->2, 4->5
+  el("line",{x1:240,y1:236,x2:253,y2:194,class:"ink","marker-end":"url(#ah)"},v4);
+  el("line",{x1:227,y1:194,x2:222,y2:236,class:"ink","marker-end":"url(#ah)"},v4);
+  const st14=el("line",{x1:160,y1:215,x2:165,y2:215,class:"ink","stroke-width":2});
+  const st12=el("line",{x1:265,y1:215,x2:320,y2:215,class:"ink","stroke-width":2});
+  el("path",{d:"M150 209 L160 215 L150 221z",class:"bx"});
+  el("path",{d:"M330 209 L320 215 L330 221z",class:"bx"});
+  [[222,"5"],[258,"3"]].forEach(([x,n])=>{el("line",{x1:x,y1:240,x2:x,y2:248,class:"ink"});el("path",{d:`M${x-5} 255 L${x+5} 255 L${x} 248z`,class:"bx"});txt(x+6,262,n,"num");});
+  const puff5=el("circle",{cx:222,cy:262,r:4,class:"puff"}), puff3=el("circle",{cx:258,cy:262,r:4,class:"puff"});
+  puff5.style.transformBox=puff3.style.transformBox="fill-box"; puff5.style.transformOrigin=puff3.style.transformOrigin="center";
+  txt(222,186,"4","num","end"); txt(258,186,"2","num"); txt(245,252,"1","num");
+  txt(146,206,"14","num","end"); txt(334,206,"12","num");
+  txt(318,252,"1V4  5/2 impulse","tag");
+
+  // ---------- generic 3/2 NC valve ----------
+  function v32(x0,yT,act,label,labelX){
+    const H=34,yB=yT+H,g=el("g",{});
+    el("rect",{x:x0-30,y:yT,width:30,height:H,class:"bx"},g);
+    el("rect",{x:x0,y:yT,width:30,height:H,class:"bx"},g);
+    el("line",{x1:x0-20,y1:yB-4,x2:x0-20,y2:yT+4,class:"ink","marker-end":"url(#ah)"},g);
+    el("path",{d:`M${x0-8} ${yB} V${yB-9} M${x0-12} ${yB-9} H${x0-4}`,class:"ink"},g);
+    el("line",{x1:x0+10,y1:yT+4,x2:x0+22,y2:yB-4,class:"ink","marker-end":"url(#ah)"},g);
+    el("path",{d:`M${x0+10} ${yB} V${yB-9} M${x0+6} ${yB-9} H${x0+14}`,class:"ink"},g);
+    const ym=yT+H/2, stem=el("line",{x1:x0-33,y1:ym,x2:x0-30,y2:ym,class:"ink","stroke-width":2});
+    const spring=el("polyline",{class:"ink",points:""});
+    el("line",{x1:x0+70,y1:ym-8,x2:x0+70,y2:ym+8,class:"ink","stroke-width":2});
+    if(act==="pilot") el("path",{d:`M${x0-45} ${ym-6} L${x0-33} ${ym} L${x0-45} ${ym+6}z`,class:"bx"});
+    if(act==="button") el("path",{d:`M${x0-33} ${ym} H${x0-40} M${x0-40} ${ym-8} Q${x0-50} ${ym} ${x0-40} ${ym+8}z`,class:"bx"});
+    if(act==="sensor"){el("rect",{x:x0-46,y:ym-7,width:13,height:14,class:"bx"});el("path",{d:`M${x0-43} ${ym+3} V${ym-3} L${x0-39.5} ${ym+1} L${x0-36} ${ym-3} V${ym+3}`,class:"ink","stroke-width":1});}
+    el("line",{x1:x0+22,y1:yB,x2:x0+22,y2:yB+5,class:"ink"});
+    el("path",{d:`M${x0+18} ${yB+11} L${x0+26} ${yB+11} L${x0+22} ${yB+5}z`,class:"bx"});
+    txt(x0+6,yT-3,"2","num","end"); txt(x0+6,yB+10,"1","num","end"); txt(x0+28,yB+18,"3","num");
+    txt(labelX!=null?labelX:x0-30,yT-12,label,"tag");
+    return {g,s:0,target:0,x0,stem,spring,ym};
+  }
+  // 1V2 sequence valve (dashed group)
+  el("rect",{x:112,y:424,width:210,height:84,fill:"none",stroke:"var(--muted)","stroke-dasharray":"5 4"});
+  txt(118,438,"1V2 วาล์วลำดับแรงดัน","tag");
+  txt(118,450,"เปิดเมื่อสัญญาณ ≥ 4.0 bar","num");
+  const vSeq=v32(230,450,"pilot","");
+  txt(196,462,"12","num","end");
+  const vB1=v32(50,345,"sensor","1B1",12);
+  const vS1=v32(175,345,"button","1S1",208);
+  const vS2=v32(320,345,"button","1S2",286);
+
+  // AND 1V3
+  el("rect",{x:110,y:310,width:60,height:20,class:"bx"});
+  el("rect",{x:132,y:313,width:16,height:14,class:"bx"});
+  el("path",{d:"M110 320 H132 M148 320 H170",class:"ink","stroke-dasharray":"2 2"});
+  txt(140,300,"1V3 AND","tag","middle");
+  txt(114,342,"1","num"); txt(166,342,"1","num","end"); txt(144,306,"2","num");
+
+  // supply + tank-less source
+  el("path",{d:"M152 634 L168 634 L160 622z",class:"inkf"});
+  txt(175,634,"0Z ลมหลัก 6 bar","tag");
+  txt(372,596,"","num");
+
+  // ---------- state ----------
+  const S={supply:false,s1:false,s2:false,v4:0,v4s:0,pos:0,p6:0,demo:null,blocked:0};
+  const cfg={p1:5.5,p6:4,v7:50,v5:70};
+  const supplyBtn=$("supplyBtn"), s1Btn=$("s1Btn"), s2Btn=$("s2Btn"), demoBtn=$("demoBtn");
+  const steps=[...document.querySelectorAll("#steps li")];
+
+  function setSupply(v){S.supply=v;supplyBtn.setAttribute("aria-pressed",v);supplyBtn.textContent=v?"ปิดลมหลัก (0Z)":"เปิดลมหลัก (0Z)";}
+  function setBtn(which,v){S[which]=v;(which==="s1"?s1Btn:s2Btn).classList.toggle("on",v);}
+  function stopDemo(){if(S.demo){S.demo=null;demoBtn.classList.remove("on");demoBtn.textContent="▶ สาธิตอัตโนมัติ ครบรอบ";setBtn("s1",false);setBtn("s2",false);}}
+
+  supplyBtn.addEventListener("click",()=>{stopDemo();setSupply(!S.supply);});
+  [["s1",s1Btn],["s2",s2Btn]].forEach(([w,b])=>{
+    const dn=e=>{e.preventDefault();stopDemo();setBtn(w,true);}, up=()=>{if(!S.demo)setBtn(w,false);};
+    b.addEventListener("pointerdown",dn);["pointerup","pointerleave","pointercancel"].forEach(t=>b.addEventListener(t,up));
+    b.addEventListener("keydown",e=>{if((e.key===" "||e.key==="Enter")&&!e.repeat)dn(e);});
+    b.addEventListener("keyup",e=>{if(e.key===" "||e.key==="Enter")up();});
+  });
+  function bindRange(id,key,fmt){const r=$(id),o=$("o"+id.slice(1));const f=()=>{cfg[key]=+r.value;o.textContent=fmt(+r.value);};r.addEventListener("input",f);f();}
+  bindRange("r1V1","p1",v=>v.toFixed(2)+" bar");
+  bindRange("r1V6","p6",v=>v.toFixed(2)+" bar");
+  bindRange("r1V7","v7",v=>v+" %");
+  bindRange("r1V5","v5",v=>v+" %");
+
+  demoBtn.addEventListener("click",()=>{
+    if(S.demo){stopDemo();return;}
+    setSupply(false);setBtn("s1",false);setBtn("s2",false);
+    S.demo={step:0,t:0,h:0};demoBtn.classList.add("on");demoBtn.textContent="■ หยุดการสาธิต";
+  });
+  function runDemo(dt){
+    const d=S.demo;if(!d)return;d.t+=dt;const nx=()=>{d.step++;d.t=0;d.h=0;};
+    switch(d.step){
+      case 0: if(d.t>0.8){setSupply(true);nx();}break;
+      case 1: if(d.t>2){setBtn("s1",true);nx();}break;
+      case 2: if(d.t>0.6){setBtn("s1",false);nx();}break;
+      case 3: if(S.pos>=1){d.h+=dt;if(d.h>1.8){setBtn("s2",true);nx();}}break;
+      case 4: if(d.t>0.6){setBtn("s2",false);nx();}break;
+      case 5: if(S.pos<=0.5){setBtn("s1",true);nx();}break;
+      case 6: if(d.t>1.4){setBtn("s1",false);nx();}break;
+      case 7: if(S.pos<=0){d.h+=dt;if(d.h>2){setSupply(false);nx();}}break;
+      case 8: if(d.t>1.5)stopDemo();break;
+    }
+  }
+
+  function moveValve(v,on,dt){
+    v.target=on?1:0; v.s+= (v.target-v.s)*Math.min(1,dt*14);
+    v.g.setAttribute("transform",`translate(${(v.s*30).toFixed(2)},0)`);
+    v.stem.setAttribute("x2",v.x0-30+v.s*30);
+    v.spring.setAttribute("points",zig(v.x0+30+v.s*30,v.x0+70,v.ym,6));
+  }
+
+  let last=performance.now();
+  function tick(now){
+    const dt=Math.min(0.05,(now-last)/1000);last=now;
+    runDemo(dt);
+    const sup=S.supply;
+    const pv1=sup?Math.min(cfg.p1,6):0;
+    const seq=sup&&pv1>=4;
+    const b1act=S.pos<=0.01;
+    const sb=seq;
+    const oB1=sb&&b1act, oS1=sb&&S.s1, oS2=sb&&S.s2, oAND=oB1&&oS1;
+    if(oAND&&!oS2)S.v4=1; else if(oS2&&!oAND)S.v4=0;
+    S.blocked = S.s1 && sb && !b1act && S.v4===0;
+
+    // spool of 1V4
+    S.v4s+=(S.v4-S.v4s)*Math.min(1,dt*12);
+    const sh=S.v4s*50;
+    v4.setAttribute("transform",`translate(${sh.toFixed(2)},0)`);
+    st14.setAttribute("x2",165+sh); st12.setAttribute("x1",265+sh);
+    moveValve(vSeq,seq,dt); moveValve(vB1,b1act,dt); moveValve(vS1,S.s1,dt); moveValve(vS2,S.s2,dt);
+
+    // cylinder
+    const ext=S.v4===1;
+    const moving=sup&&((ext&&S.pos<1)||(!ext&&S.pos>0));
+    if(moving){const sp=ext?0.05+cfg.v7/100*0.45:-(0.05+cfg.v5/100*0.6);S.pos=Math.max(0,Math.min(1,S.pos+sp*dt));}
+    const p6t=sup&&ext?(moving?Math.min(cfg.p6,1.6):Math.min(cfg.p6,6)):0;
+    S.p6+=(p6t-S.p6)*Math.min(1,dt*4);
+    const px=194+S.pos*86;
+    mover.setAttribute("transform",`translate(${px.toFixed(2)},0)`);
+    chCap.setAttribute("width",Math.max(0,px-192));
+    chRod.setAttribute("x",px+6);chRod.setAttribute("width",Math.max(0,298-(px+6)));
+    chCap.setAttribute("class","ch"+(sup&&ext?" on":""));
+    chRod.setAttribute("class","ch"+(sup&&!ext?" on":""));
+    sens.setAttribute("class","sensor"+(b1act?" on":""));
+
+    // pipes
+    setPipe("M0",sup,moving?"fwd":""); setPipe("M1",sup,""); setPipe("M2",sup,"");
+    setPipe("PV1",sup&&pv1>0,""); setPipe("S0",sb,""); setPipe("S1",sb,""); setPipe("S2",sb,"");
+    setPipe("B1",oB1,""); setPipe("X1",oS1,""); setPipe("X14",oAND,""); setPipe("X12",oS2,"");
+    const capOn=sup&&ext, rodOn=sup&&!ext;
+    setPipe("C1",capOn,moving?(ext?"fwd":"rev"):"");
+    setPipe("C2",capOn,moving?(ext?"fwd":"rev"):"");
+    setPipe("C3",capOn,moving&&!ext?"fwd":"");
+    setPipe("C4",capOn,moving&&!ext?"fwd":"");
+    setPipe("R1",rodOn,moving?(ext?"rev":"fwd"):"");
+    setPipe("R2",rodOn,moving?(ext?"rev":"fwd"):"");
+    puff3.setAttribute("class","puff"+(moving&&ext?" go":""));
+    puff5.setAttribute("class","puff"+(moving&&!ext?" go":""));
+
+    // readouts
+    g1V1.textContent=pv1.toFixed(2); g1V6.textContent=S.p6.toFixed(2);
+    $("mP").textContent=S.p6.toFixed(2);
+    $("mS").textContent=Math.round(S.pos*100);
+    $("mF").textContent=Math.round(S.p6*80.4);
+    $("c1V2").classList.toggle("on",sb);
+    $("c1B1").classList.toggle("on",b1act&&sb);
+    $("c1V3").classList.toggle("on",oAND);
+    const c4=$("c1V4");c4.textContent="1V4 = ตำแหน่ง "+(S.v4?"14 (ยืด)":"12 (หด)");c4.classList.toggle("on",S.v4===1);
+
+    let s,sub,act=[],warn=false;
+    if(!sup){s="ลมหลักปิดอยู่";sub=S.pos>0&&S.pos<1?"ลูกสูบค้างที่ "+Math.round(S.pos*100)+"% และ 1V4 ยังจำตำแหน่งเดิมไว้":"กด “เปิดลมหลัก” เพื่อเริ่ม";}
+    else if(!seq){s="1V2 ยังไม่เปิด";sub="แรงดันจาก 1V1 ("+pv1.toFixed(2)+" bar) ต่ำกว่า 4.0 bar จึงไม่มีลมสัญญาณ ปุ่ม 1S1 และ 1S2 ใช้ไม่ได้";act=[0];warn=true;}
+    else if(S.blocked){s="Interlock: กด 1S1 แต่ยังยืดไม่ได้";sub="ลูกสูบยังไม่หดสุด 1B1 จึงไม่ทำงาน 1V3 (AND) ต้องได้สัญญาณทั้ง 2 ทางจึงจะส่งต่อ";act=[0,1,6];warn=true;}
+    else if(moving&&ext){s="กระบอกสูบกำลังยืดออก";sub="1V4 อยู่ตำแหน่ง 14 ลมผ่าน 1V6 เข้าด้านหัวสูบ ลมด้านก้านสูบออกผ่าน 1V7 ไประบายที่พอร์ต 3";act=[0,1,3,4];}
+    else if(moving){s="กระบอกสูบกำลังหดกลับ";sub="1V4 อยู่ตำแหน่ง 12 ลมเข้าด้านก้านสูบ ลมด้านหัวสูบออกผ่าน 1V5 ไประบายที่พอร์ต 5";act=[0,1,5];}
+    else if(ext){s="ยืดสุดแล้ว";sub="แรงดันหัวสูบขึ้นถึงค่าที่ตั้งไว้ที่ 1V6 ("+cfg.p6.toFixed(2)+" bar) 1V4 จำตำแหน่งไว้ กด 1S2 เพื่อหดกลับ";act=[0,1,4];}
+    else {s="พร้อมทำงาน";sub="ลูกสูบหดสุด 1B1 ตรวจจับได้ กด 1S1 เพื่อยืดออก";act=[0,1,2];}
+    const st=$("status");st.textContent=s;st.classList.toggle("warn",warn);$("statusSub").textContent=sub;
+    steps.forEach((li,i)=>li.classList.toggle("act",act.includes(i)));
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body></html>
