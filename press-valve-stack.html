@@ -157,6 +157,7 @@ ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--in
         <span class="chip" id="cPB">Pilot check B เปิด</span>
         <span class="chip" id="cRV">Relief ระบาย</span>
         <span class="chip" id="cDrift">แรมไหลลงเอง</span>
+        <span class="chip" id="cOver">ตั้ง relief เกินพิกัดปั๊ม 159 bar</span>
       </div>
 
       <div class="box meters">
@@ -164,6 +165,8 @@ ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--in
         <div class="meter"><div class="k">แรงอัด (สมมติกระบอก Ø100)</div><div class="v"><span id="mF">0.0</span><small>ตัน</small></div></div>
         <div class="meter"><div class="k">ตำแหน่งแรม</div><div class="v"><span id="mS">0</span><small>% ลง</small></div></div>
         <div class="meter"><div class="k">แรงดันค้างฝั่ง B</div><div class="v"><span id="mB">0</span><small>bar</small></div></div>
+        <div class="meter"><div class="k">อัตราไหลปั๊ม 20V-12A (1450 rpm)</div><div class="v"><span id="mQ">0</span><small>L/min</small></div></div>
+        <div class="meter"><div class="k">น้ำมันที่ระบายทิ้งผ่าน relief</div><div class="v"><span id="mQr">0</span><small>L/min</small></div></div>
       </div>
 
       <div class="box sliders">
@@ -189,6 +192,7 @@ ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--in
         <div><code>MPW-03-2-20</code><span>Pilot operated check แบบโมดูล ล็อกทั้งฝั่ง A และ B (ชั้นกลาง)</span></div>
         <div><code>MSW-03-X-40</code><span>Throttle &amp; check แบบโมดูล ปรับความเร็ว A และ B แยกกัน (ชั้นล่าง)</span></div>
         <div><code>Subplate สีเขียว</code><span>แผ่นฐานรับวาล์ว มีพอร์ต P, T และสาย A, B ออกไปกระบอกสูบ</span></div>
+        <div><code>INTER-MAGNUS 20V-12A-1C</code><span>ปั๊มใบพัด (vane) แบบเดียวกับ Vickers 20V: 40 cc/รอบ, ใช้งานต่อเนื่องได้ถึง 159 bar, รอบสูงสุด 1800 rpm ได้ราว 52 ลิตร/นาทีที่ 1450 rpm</span></div>
         <div><code>CROSS relief + เกจ FIT</code><span>วาล์วระบายแรงดันหลัก และเกจแรงดันบนสาย P</span></div>
       </div>
 
@@ -311,7 +315,7 @@ ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--in
   el("line",{x1:56,y1:651,x2:72,y2:651,class:"ink","stroke-width":2});
   el("circle",{cx:90,cy:650,r:18,class:"bx"}); el("path",{d:"M90 633 L83 645 L97 645z",class:"inkf"});
   const rotor=el("path",{d:"M90 657 m-5 0 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M90 652 V662 M85 657 H95",class:"ink","stroke-width":1});
-  txt(36,676,"มอเตอร์","lbl","middle"); txt(112,660,"ปั๊ม","lbl");
+  txt(36,676,"มอเตอร์","lbl","middle"); txt(112,652,"ปั๊มใบพัด","lbl"); txt(112,664,"20V-12A-1C","num");
   el("rect",{x:56,y:684,width:130,height:14,fill:"var(--ret-fill)"});
   el("path",{d:"M54 676 V700 H188 V676",class:"ink","stroke-width":1.8});
   txt(194,696,"ถังน้ำมัน","lbl");
@@ -424,6 +428,9 @@ ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--in
     $("mF").textContent=(mode==="press"?S.pA*0.0801:0).toFixed(1);
     $("mS").textContent=Math.round(S.pos*100);
     $("mB").textContent=Math.round(S.pB);
+    const Q=m?52:0, Qr=relief?Q:0;
+    $("mQ").textContent=Q; $("mQr").textContent=Qr;
+    $("cOver").classList.toggle("bad",rv>159);
     $("cSa").classList.toggle("on",d===1); $("cSb").classList.toggle("on",d===-1);
     $("cPA").classList.toggle("on",mode==="down"||mode==="up"); $("cPB").classList.toggle("on",mode==="down"||mode==="up");
     $("cRV").classList.toggle("on",relief); $("cDrift").classList.toggle("bad",mode==="drift");
@@ -432,11 +439,11 @@ ol li.act::before{background:var(--ink);color:var(--sheet);border-color:var(--in
     if(mode==="drift"){s="แรมไหลลงเอง!";sub="pilot check ปิดไม่สนิท น้ำหนักแรมดันน้ำมันฝั่ง B รั่วผ่านช่องกลางลงถัง ถ้าเครื่องจริงแรมค่อย ๆ ลงตอนหยุด ให้ตรวจ MPW-03 และซีลกระบอกสูบ";act=[5];warn=true;}
     else if(!m){s="มอเตอร์หยุด";sub=S.pos>0?"แรมค้างที่ "+Math.round(S.pos*100)+"% เพราะ pilot check ล็อกน้ำมันฝั่ง B ไว้ (ค้างอยู่ "+Math.round(S.pB)+" bar)":"กด “เปิดมอเตอร์” แล้วสั่ง SOL a ให้แรมลงอัด";act=S.pos>0?[5]:[];}
     else if(mode==="down"){s="SOL a: แรมกำลังลง";sub="P→A น้ำมันขึ้นหัวกระบอก pilot check B ถูกแรงดัน A ดันเปิด น้ำมันฝั่ง B ไหลผ่านปุ่ม MSW ฝั่ง B ลงถัง (ปุ่มนี้คุมความเร็วลง)";act=[0,1,2];}
-    else if(mode==="press"){s="กำลังอัด "+(S.pA*0.0801).toFixed(1)+" ตัน";sub="แรมแตะแม่พิมพ์ แรงดันขึ้นถึงค่าตั้ง CROSS relief "+rv+" bar น้ำมันส่วนเกินระบายลงถัง หมุน relief ขึ้น = อัดแรงขึ้น";act=[0,3];}
+    else if(mode==="press"){s="กำลังอัด "+(S.pA*0.0801).toFixed(1)+" ตัน";sub="แรมแตะแม่พิมพ์ แรงดันขึ้นถึงค่าตั้ง CROSS relief "+rv+" bar น้ำมันจากปั๊ม 52 L/min ระบายลงถังทั้งหมด กลายเป็นความร้อนราว "+(rv*52/600).toFixed(1)+" kW"+(rv>159?" และตั้งเกินพิกัดปั๊ม 20V-12A (159 bar) ปั๊มจะสึกเร็ว":"");warn=rv>159;act=[0,3];}
     else if(mode==="up"){s="SOL b: แรมกำลังขึ้น";sub="P→B น้ำมันเข้าใต้ลูกสูบ pilot check A ถูกแรงดัน B ดันเปิด น้ำมันหัวกระบอกไหลผ่านปุ่ม MSW ฝั่ง A ลงถัง";act=[0,4];}
     else if(mode==="top"){s="แรมขึ้นสุดแล้ว";sub="ยังจ่ายไฟ SOL b อยู่ ปั๊มระบายผ่าน relief ควรตัดไฟให้วาล์วกลับกลาง";act=[0,4];}
     else {s="ตำแหน่งกลาง: แรมล็อกอยู่ที่ "+Math.round(S.pos*100)+"%";
-      sub=ctr==="abt"?"pilot check ปิดทั้งคู่ แรมไม่ไหลลง แต่ช่องกลาง P ปิด ปั๊มจึงดันผ่าน relief ที่ "+rv+" bar ตลอดเวลา น้ำมันร้อนและเปลืองไฟ":"pilot check ปิดทั้งคู่ แรมไม่ไหลลง น้ำมันจากปั๊มไหลลงถังที่แรงดันต่ำ ประหยัดพลังงาน";
+      sub=ctr==="abt"?"pilot check ปิดทั้งคู่ แรมไม่ไหลลง แต่ช่องกลาง P ปิด ปั๊มจึงดันน้ำมัน 52 L/min ผ่าน relief ที่ "+rv+" bar ตลอดเวลา เป็นความร้อนทิ้งราว "+(rv*52/600).toFixed(1)+" kW":"pilot check ปิดทั้งคู่ แรมไม่ไหลลง น้ำมันจากปั๊มไหลลงถังที่แรงดันต่ำ ประหยัดพลังงาน";
       act=ctr==="abt"?[0,5,6]:[0,5]; warn=ctr==="abt";}
     const st=$("status");st.textContent=s;st.classList.toggle("warn",warn);$("statusSub").textContent=sub;
     steps.forEach((li,i)=>li.classList.toggle("act",act.includes(i)));
